@@ -18,10 +18,13 @@
 	},
 	"extra": {
 		"display-name": "Forum Permission Matrix",
-		"soft-require": {
-			"phpbb/phpbb": ">=3.3.14,<4.0.0@dev"
+		"version-check": {
+			"host": "raw.githubusercontent.com",
+			"directory": "/verturin/permmatrix/main",
+			"filename": "version.json",
+			"ssl": true
 		}
-	},
+	}
 	"autoload": {
 		"psr-4": {
 			"verturin\\permmatrix\\": ""
