@@ -1,0 +1,4 @@
+verturin_permmatrix:
+    path: /permmatrix
+    defaults:
+        _controller: verturin.permmatrix.controller:handle

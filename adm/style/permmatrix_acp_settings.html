@@ -1,0 +1,52 @@
+<!-- INCLUDE overall_header.html -->
+
+<h1>{{ lang('PERMMATRIX_SETTINGS') }}</h1>
+
+<form id="permmatrix_settings" method="post" action="{{ U_ACTION }}">
+
+	<fieldset>
+		<legend>{{ lang('PERMMATRIX_SETTINGS') }}</legend>
+
+		<dl>
+			<dt>
+				<label>{{ lang('PERMMATRIX_ENABLED') }}</label>
+				<span>{{ lang('PERMMATRIX_ENABLED_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<!-- IF PERMMATRIX_ENABLED -->
+				<label><input class="radio" type="radio" name="permmatrix_enabled" value="1" checked="checked"> {{ lang('YES') }}</label>&nbsp;
+				<label><input class="radio" type="radio" name="permmatrix_enabled" value="0"> {{ lang('NO') }}</label>
+				<!-- ELSE -->
+				<label><input class="radio" type="radio" name="permmatrix_enabled" value="1"> {{ lang('YES') }}</label>&nbsp;
+				<label><input class="radio" type="radio" name="permmatrix_enabled" value="0" checked="checked"> {{ lang('NO') }}</label>
+				<!-- ENDIF -->
+			</dd>
+		</dl>
+
+		<dl>
+			<dt>
+				<label>{{ lang('PERMMATRIX_EXCLUDED_GROUPS') }}</label>
+				<span>{{ lang('PERMMATRIX_EXCLUDED_GROUPS_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<!-- BEGIN groups -->
+				<!-- IF groups.EXCLUDED -->
+				<label><input type="checkbox" name="excluded_groups[]" value="{{ groups.ID }}" checked="checked"> {{ groups.NAME }}</label>&nbsp;&nbsp;
+				<!-- ELSE -->
+				<label><input type="checkbox" name="excluded_groups[]" value="{{ groups.ID }}"> {{ groups.NAME }}</label>&nbsp;&nbsp;
+				<!-- ENDIF -->
+				<!-- END groups -->
+			</dd>
+		</dl>
+
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		{{ S_FORM_TOKEN }}
+		<input class="button1" type="submit" name="submit" value="{{ lang('SUBMIT') }}">
+		<input class="button2" type="reset" value="{{ lang('RESET') }}">
+	</fieldset>
+
+</form>
+
+<!-- INCLUDE overall_footer.html -->

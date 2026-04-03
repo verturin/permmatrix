@@ -1,0 +1,243 @@
+<!-- INCLUDE overall_header.html -->
+
+<div id="wrap">
+	<div id="page-body">
+
+		<div class="permmatrix-header">
+			<h2 class="permmatrix-title">{{ lang('PERMMATRIX_PAGE_TITLE') }}</h2>
+
+			<form class="permmatrix-group-form" method="get" action="{{ U_PERMMATRIX_BASE }}">
+				<label for="permmatrix-group-select">{{ lang('PERMMATRIX_SELECT_GROUP') }}</label>
+				<select id="permmatrix-group-select" name="group_id" onchange="this.form.submit()">
+					<!-- BEGIN group_select -->
+					<option value="{{ group_select.ID }}"<!-- IF group_select.SELECTED --> selected="selected"<!-- ENDIF -->>{{ group_select.NAME }}</option>
+					<!-- END group_select -->
+				</select>
+				<noscript><input type="submit" value="OK" class="button1"></noscript>
+			</form>
+
+			<p class="permmatrix-current-group">
+				{{ lang('PERMMATRIX_GROUP_NAME') }} : <strong>{{ PERMMATRIX_GROUP_NAME }}</strong>
+			</p>
+		</div>
+
+		<!-- Legend -->
+		<div class="permmatrix-legend">
+			<span class="pm-yes">&#10004;</span> {{ lang('PERMMATRIX_LEGEND_YES') }}
+			&nbsp;&nbsp;
+			<span class="pm-never">&#10008;</span> {{ lang('PERMMATRIX_LEGEND_NEVER') }}
+			&nbsp;&nbsp;
+			<span class="pm-no">&ndash;</span> {{ lang('PERMMATRIX_LEGEND_NO') }}
+			&nbsp;&nbsp;
+			<span class="pm-undef">&middot;</span> {{ lang('PERMMATRIX_LEGEND_UNDEF') }}
+		</div>
+
+		<!-- Permission table -->
+		<div class="permmatrix-wrap">
+			<table class="permmatrix-table" cellspacing="0" cellpadding="0">
+				<thead>
+					<tr>
+						<th class="permmatrix-th-forum" rowspan="1">{{ lang('PERMMATRIX_COL_FORUM') }}</th>
+						<!-- BEGIN perm_cols -->
+						<th class="permmatrix-th-perm" title="{{ perm_cols.OPT }}">
+							<span class="permmatrix-vtext">{{ perm_cols.LABEL }}</span>
+						</th>
+						<!-- END perm_cols -->
+					</tr>
+				</thead>
+				<tbody>
+					<!-- BEGIN forums -->
+					<!-- IF forums.HAS_PERM -->
+					<tr class="permmatrix-row permmatrix-depth-{{ forums.DEPTH }}">
+						<td class="permmatrix-forum-cell permmatrix-type-{{ forums.TYPE_LC }}">
+							<span class="permmatrix-type-badge">[{{ forums.TYPE_LABEL }}]</span>
+							{{ forums.NAME }}
+						</td>
+						<!-- BEGIN forums.perm_cells -->
+						<td class="permmatrix-perm-cell permmatrix-{{ forums.perm_cells.STATUS }}">{{ forums.perm_cells.ICON }}</td>
+						<!-- END forums.perm_cells -->
+					</tr>
+					<!-- ELSE -->
+					<tr class="permmatrix-row permmatrix-depth-{{ forums.DEPTH }} permmatrix-no-perm">
+						<td class="permmatrix-forum-cell permmatrix-type-{{ forums.TYPE_LC }}">
+							<span class="permmatrix-type-badge">[{{ forums.TYPE_LABEL }}]</span>
+							{{ forums.NAME }}
+						</td>
+						<!-- BEGIN forums.perm_cells -->
+						<td class="permmatrix-perm-cell permmatrix-{{ forums.perm_cells.STATUS }}">{{ forums.perm_cells.ICON }}</td>
+						<!-- END forums.perm_cells -->
+					</tr>
+					<!-- ENDIF -->
+					<!-- END forums -->
+				</tbody>
+			</table>
+		</div>
+
+	</div><!-- /#page-body -->
+</div><!-- /#wrap -->
+
+<style>
+/* ── Permission Matrix Styles ────────────────────────────────────────────── */
+/* These styles are self-contained and work on any phpBB style.              */
+
+.permmatrix-header {
+	margin: 10px 0;
+	padding: 10px;
+	background: rgba(0,0,0,.04);
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+.permmatrix-title {
+	margin: 0;
+	font-size: 1.15em;
+}
+.permmatrix-group-form {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin: 0;
+}
+.permmatrix-group-form select {
+	padding: 3px 6px;
+	font-size: 0.95em;
+	border: 1px solid rgba(0,0,0,.2);
+	border-radius: 3px;
+	background: rgba(255,255,255,.8);
+	min-width: 180px;
+}
+.permmatrix-current-group {
+	margin: 0;
+	font-size: 0.9em;
+	opacity: .75;
+}
+
+.permmatrix-legend {
+	margin: 8px 0;
+	font-size: 0.85em;
+	opacity: .8;
+}
+.pm-yes    { color: #2d8a4e; font-weight: bold; }
+.pm-never  { color: #c0392b; font-weight: bold; }
+.pm-no     { color: #b7860b; font-weight: bold; }
+.pm-undef  { color: #888; }
+
+.permmatrix-wrap {
+	overflow-x: auto;
+	margin: 0 0 16px;
+	border: 1px solid rgba(0,0,0,.15);
+	border-radius: 4px;
+}
+.permmatrix-table {
+	border-collapse: collapse;
+	width: 100%;
+	font-size: 0.82em;
+}
+.permmatrix-table thead th {
+	background: rgba(0,0,0,.08);
+	border-bottom: 2px solid rgba(0,0,0,.15);
+	border-right: 1px solid rgba(0,0,0,.08);
+	padding: 4px 2px;
+	text-align: center;
+	vertical-align: bottom;
+	position: sticky;
+	top: 0;
+	z-index: 5;
+}
+.permmatrix-th-forum {
+	text-align: left !important;
+	padding: 6px 10px !important;
+	min-width: 200px;
+	position: sticky;
+	left: 0;
+	z-index: 10 !important;
+	background: rgba(0,0,0,.1) !important;
+}
+.permmatrix-th-perm {
+	width: 26px;
+	min-width: 26px;
+	max-width: 26px;
+	padding: 0 !important;
+	vertical-align: bottom;
+	height: 85px;
+	max-height: 85px;
+	overflow: hidden;
+}
+.permmatrix-vtext {
+	display: block;
+	writing-mode: vertical-lr;
+	transform: rotate(180deg);
+	white-space: nowrap;
+	font-size: 9px;
+	font-weight: 600;
+	height: 82px;
+	max-height: 82px;
+	overflow: hidden;
+	line-height: 26px;
+	padding: 2px 0;
+	text-align: left;
+}
+
+/* Forum rows */
+.permmatrix-table tbody tr:nth-child(even) {
+	background: rgba(0,0,0,.025);
+}
+.permmatrix-table tbody tr:hover {
+	background: rgba(0,0,100,.04);
+}
+.permmatrix-forum-cell {
+	padding: 4px 8px;
+	white-space: nowrap;
+	border-right: 2px solid rgba(0,0,0,.12);
+	border-bottom: 1px solid rgba(0,0,0,.07);
+	position: sticky;
+	left: 0;
+	background: inherit;
+	z-index: 2;
+	font-size: 0.9em;
+}
+.permmatrix-type-badge {
+	font-size: 0.78em;
+	margin-right: 4px;
+	opacity: .6;
+}
+
+/* Depth indentation */
+.permmatrix-depth-0 .permmatrix-forum-cell { font-weight: 700; padding-left: 6px;  }
+.permmatrix-depth-1 .permmatrix-forum-cell { font-weight: 600; padding-left: 18px; }
+.permmatrix-depth-2 .permmatrix-forum-cell { font-weight: 400; padding-left: 30px; }
+.permmatrix-depth-3 .permmatrix-forum-cell { font-weight: 400; padding-left: 42px; opacity: .8; }
+
+/* Forum type colours */
+.permmatrix-type-cat   .permmatrix-type-badge { color: #c0392b; }
+.permmatrix-type-forum .permmatrix-type-badge { color: #2471a3; }
+.permmatrix-type-link  .permmatrix-type-badge { color: #888;    }
+.permmatrix-depth-0.permmatrix-type-cat .permmatrix-forum-cell { color: #c0392b; }
+
+/* Permission cells */
+.permmatrix-perm-cell {
+	text-align: center;
+	border-right: 1px solid rgba(0,0,0,.06);
+	border-bottom: 1px solid rgba(0,0,0,.06);
+	padding: 4px 0;
+	font-size: 13px;
+	width: 26px;
+}
+.permmatrix-yes   { color: #2d8a4e; }
+.permmatrix-never { color: #c0392b; }
+.permmatrix-no    { color: #b7860b; }
+.permmatrix-undef { color: #ccc;    }
+
+/* No-perm rows (dimmed) */
+.permmatrix-no-perm { opacity: .45; }
+.permmatrix-no-perm .permmatrix-forum-cell { font-style: italic; }
+
+/* Responsive */
+@media (max-width: 600px) {
+	.permmatrix-header { flex-direction: column; align-items: flex-start; }
+}
+</style>
+
+<!-- INCLUDE overall_footer.html -->
