@@ -42,6 +42,9 @@ class install_data extends \phpbb\db\migration\migration
 			['config.add', ['verturin_permmatrix_enabled', 1]],
 			['config.add', ['verturin_permmatrix_excluded_groups', '']],
 
+			// User permission
+			['permission.add', ['u_permmatrix_view', true]],
+
 			// ACP module — under Extensions tab
 			['module.add', [
 				'acp',
@@ -67,6 +70,7 @@ class install_data extends \phpbb\db\migration\migration
 		return [
 			['config.remove', ['verturin_permmatrix_enabled']],
 			['config.remove', ['verturin_permmatrix_excluded_groups']],
+			['permission.remove', ['u_permmatrix_view']],
 		];
 	}
 }
