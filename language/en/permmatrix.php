@@ -27,6 +27,8 @@ $lang = array_merge($lang, [
 	'PERMMATRIX_DISABLED'    => 'The permission matrix is currently disabled.',
 	'PERMMATRIX_NO_GROUPS'   => 'No groups available to display.',
 	'LOGIN_EXPLAIN_PERMMATRIX' => 'You must be logged in to view the permission matrix.',
+	'PERMMATRIX_NOT_ALLOWED'   => 'You do not have permission to access the permission matrix.',
+
 
 	// Legend
 	'PERMMATRIX_LEGEND_YES'   => 'Allowed',

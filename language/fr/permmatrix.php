@@ -27,6 +27,8 @@ $lang = array_merge($lang, [
 	'PERMMATRIX_DISABLED'    => 'La matrice des permissions est actuellement désactivée.',
 	'PERMMATRIX_NO_GROUPS'   => 'Aucun groupe disponible à afficher.',
 	'LOGIN_EXPLAIN_PERMMATRIX' => 'Vous devez être connecté pour consulter la matrice des permissions.',
+	'PERMMATRIX_NOT_ALLOWED'   => 'Vous n\'avez pas la permission d\'accéder à la matrice des permissions.',
+
 
 	// Légende
 	'PERMMATRIX_LEGEND_YES'   => 'Autorisé',
@@ -39,7 +41,6 @@ $lang = array_merge($lang, [
 	'PERMMATRIX_TYPE_FORUM' => 'FORUM',
 	'PERMMATRIX_TYPE_LINK'  => 'LIEN',
 
-	// Libellés des colonnes de permissions
 	'PERMMATRIX_F_LIST'        => 'Voir forum',
 	'PERMMATRIX_F_READ'        => 'Lire sujets',
 	'PERMMATRIX_F_SEARCH'      => 'Rechercher',

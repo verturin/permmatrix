@@ -80,6 +80,7 @@ class main_listener implements EventSubscriberInterface
 	{
 		return [
 			'core.user_setup'                      => 'load_language',
+			'core.permissions'                     => 'load_permissions',
 			'core.page_header'                     => 'add_page_header_link',
 			'core.adm_page_header'                 => 'load_acp_language',
 		];
@@ -107,12 +108,22 @@ class main_listener implements EventSubscriberInterface
 	}
 
 	/**
+	 * Register custom permissions so they appear in ACP > Permissions.
+	 */
+	public function load_permissions($event)
+	{
+		$permissions = $event['permissions'];
+		$permissions['u_permmatrix_view'] = ['lang' => 'ACL_U_PERMMATRIX_VIEW', 'cat' => 'misc'];
+		$event['permissions'] = $permissions;
+	}
+
+	/**
 	 * Add permission matrix link to the page header navigation (only for logged-in users).
 	 */
 	public function add_page_header_link($event)
 	{
-		// Only show to logged-in users and if extension is enabled
-		if ($this->user->data['user_id'] == ANONYMOUS || !$this->config['verturin_permmatrix_enabled'])
+		// Only show to logged-in users, if extension is enabled, and if user has permission
+		if ($this->user->data['user_id'] == ANONYMOUS || !$this->config['verturin_permmatrix_enabled'] || !$this->auth->acl_get('u_permmatrix_view'))
 		{
 			return;
 		}
