@@ -110,7 +110,13 @@ class main_controller
 		// Extension must be enabled
 		if (!$this->config['verturin_permmatrix_enabled'])
 		{
-			trigger_error('PERMMATRIX_DISABLED');
+			throw new \phpbb\exception\http_exception(403, 'PERMMATRIX_DISABLED');
+		}
+
+		// Check native permission
+		if (!$this->auth->acl_get('u_permmatrix_view'))
+		{
+			throw new \phpbb\exception\http_exception(403, 'PERMMATRIX_NOT_ALLOWED');
 		}
 
 		// Load language file
@@ -141,7 +147,7 @@ class main_controller
 
 		if (empty($groups))
 		{
-			trigger_error('PERMMATRIX_NO_GROUPS');
+			throw new \phpbb\exception\http_exception(404, 'PERMMATRIX_NO_GROUPS');
 		}
 
 		// Default to first group if none selected or invalid
