@@ -58,6 +58,12 @@ class main_module
 		// Currently excluded groups (stored as comma-separated IDs)
 		$excluded_raw = $config['verturin_permmatrix_excluded_groups'];
 		$excluded_ids = ($excluded_raw !== '') ? array_map('intval', explode(',', $excluded_raw)) : [];
+		
+		// Excluded groups for user page
+		$excluded_user_raw = isset($config['verturin_permmatrix_excluded_groups_user']) 
+			? $config['verturin_permmatrix_excluded_groups_user'] 
+			: '';
+		$excluded_user_ids = ($excluded_user_raw !== '') ? array_map('intval', explode(',', $excluded_user_raw)) : [];
 
 		// Handle form submission
 		if ($request->is_set_post('submit'))
@@ -71,9 +77,14 @@ class main_module
 			$excluded = $request->variable('excluded_groups', [0]);
 			$excluded = array_map('intval', $excluded);
 			$excluded = array_filter($excluded);
+			
+			$excluded_user = $request->variable('excluded_groups_user', [0]);
+			$excluded_user = array_map('intval', $excluded_user);
+			$excluded_user = array_filter($excluded_user);
 
 			$config->set('verturin_permmatrix_enabled', (int) $enabled);
 			$config->set('verturin_permmatrix_excluded_groups', implode(',', $excluded));
+			$config->set('verturin_permmatrix_excluded_groups_user', implode(',', $excluded_user));
 
 			trigger_error($user->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 		}
@@ -86,9 +97,10 @@ class main_module
 				: $group['group_name'];
 
 			$template->assign_block_vars('groups', [
-				'ID'       => $group['group_id'],
-				'NAME'     => $group_name,
-				'EXCLUDED' => in_array((int) $group['group_id'], $excluded_ids),
+				'ID'            => $group['group_id'],
+				'NAME'          => $group_name,
+				'EXCLUDED'      => in_array((int) $group['group_id'], $excluded_ids),
+				'EXCLUDED_USER' => in_array((int) $group['group_id'], $excluded_user_ids),
 			]);
 		}
 

@@ -1,5 +1,23 @@
 <!-- IF U_PERMMATRIX -->
-<li class="small-icon no-bulletin">
-	<a href="{{ U_PERMMATRIX }}">{{ lang('PERMMATRIX_NAV_LINK') }}</a>
+<li class="small-icon icon-permissions permmatrix-show-desktop">
+	<a href="{{ U_PERMMATRIX }}" title="{{ lang('PERMMATRIX_NAV_LINK') }}">
+		<i class="icon fa-users fa-fw" aria-hidden="true"></i><span class="sr-only">{{ lang('PERMMATRIX_NAV_LINK') }}</span>
+	</a>
 </li>
 <!-- ENDIF -->
+<!-- IF U_PERMMATRIX_USER -->
+<li class="small-icon icon-permissions-admin permmatrix-show-desktop">
+	<a href="{{ U_PERMMATRIX_USER }}" title="{{ lang('PERMMATRIX_USER_NAV_LINK') }}">
+		<i class="icon fa-shield fa-fw" aria-hidden="true" style="color: #BC2A4D;"></i><span class="sr-only">{{ lang('PERMMATRIX_USER_NAV_LINK') }}</span>
+	</a>
+</li>
+<!-- ENDIF -->
+
+<style>
+/* Masquer dans burger mobile, visible sur desktop */
+@media (max-width: 700px) {
+	.permmatrix-show-desktop {
+		display: none !important;
+	}
+}
+</style>

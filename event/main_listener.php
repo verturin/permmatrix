@@ -122,14 +122,24 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function add_page_header_link($event)
 	{
-		// Only show to logged-in users, if extension is enabled, and if user has permission
-		if ($this->user->data['user_id'] == ANONYMOUS || !$this->config['verturin_permmatrix_enabled'] || !$this->auth->acl_get('u_permmatrix_view'))
+		// Public link: logged-in users with u_permmatrix_view and extension enabled
+		if ($this->user->data['user_id'] != ANONYMOUS
+			&& $this->config['verturin_permmatrix_enabled']
+			&& $this->auth->acl_get('u_permmatrix_view'))
 		{
-			return;
+			$this->template->assign_vars([
+				'U_PERMMATRIX' => $this->helper->route('verturin_permmatrix'),
+			]);
 		}
 
-		$this->template->assign_vars([
-			'U_PERMMATRIX' => $this->helper->route('verturin_permmatrix'),
-		]);
+		// Admin link: only for users with a_board permission
+		if ($this->user->data['user_id'] != ANONYMOUS
+			&& $this->config['verturin_permmatrix_enabled']
+			&& $this->auth->acl_get('a_board'))
+		{
+			$this->template->assign_vars([
+				'U_PERMMATRIX_USER' => $this->helper->route('verturin_permmatrix_user'),
+			]);
+		}
 	}
 }

@@ -80,163 +80,145 @@
 /* ── Permission Matrix Styles ────────────────────────────────────────────── */
 /* These styles are self-contained and work on any phpBB style.              */
 
+/* ── Permission Matrix Styles - CSS ONLY OPTIMIZATION ────────────────────── */
+
 .permmatrix-header {
-	margin: 10px 0;
-	padding: 10px;
-	background: rgba(0,0,0,.04);
-	border-radius: 4px;
-	display: flex;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 12px;
+    margin: 15px 0;
+    padding: 15px;
+    background: #f4f4f4;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
 }
-.permmatrix-title {
-	margin: 0;
-	font-size: 1.15em;
-}
-.permmatrix-group-form {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	margin: 0;
-}
-.permmatrix-group-form select {
-	padding: 3px 6px;
-	font-size: 0.95em;
-	border: 1px solid rgba(0,0,0,.2);
-	border-radius: 3px;
-	background: rgba(255,255,255,.8);
-	min-width: 180px;
-}
-.permmatrix-current-group {
-	margin: 0;
-	font-size: 0.9em;
-	opacity: .75;
-}
+
+.permmatrix-title { margin: 0; font-size: 1.3em; color: #333; }
+.permmatrix-current-group { margin: 0; font-size: 1em; color: #666; }
 
 .permmatrix-legend {
-	margin: 8px 0;
-	font-size: 0.85em;
-	opacity: .8;
+    margin: 10px 0;
+    font-size: 12px;
+    padding: 5px;
+    border-bottom: 1px solid #eee;
 }
-.pm-yes    { color: #2d8a4e; font-weight: bold; }
-.pm-never  { color: #c0392b; font-weight: bold; }
-.pm-no     { color: #b7860b; font-weight: bold; }
-.pm-undef  { color: #888; }
+
+.pm-yes   { color: #2d8a4e; font-weight: bold; padding: 0 4px; }
+.pm-never { color: #c0392b; font-weight: bold; padding: 0 4px; }
+.pm-no    { color: #b7860b; font-weight: bold; padding: 0 4px; }
+.pm-undef { color: #888; }
 
 .permmatrix-wrap {
-	overflow-x: auto;
-	margin: 0 0 16px;
-	border: 1px solid rgba(0,0,0,.15);
-	border-radius: 4px;
+    overflow: visible; 
+    margin: 0 0 16px;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 4px;
 }
-.permmatrix-table {
-	border-collapse: collapse;
-	width: 100%;
-	font-size: 0.82em;
-}
+
 .permmatrix-table thead th {
-	background: rgba(0,0,0,.08);
-	border-bottom: 2px solid rgba(0,0,0,.15);
-	border-right: 1px solid rgba(0,0,0,.08);
-	padding: 4px 2px;
-	text-align: center;
-	vertical-align: bottom;
-	position: sticky;
-	top: 0;
-	z-index: 5;
-}
-.permmatrix-th-forum {
-	text-align: left !important;
-	padding: 6px 10px !important;
-	min-width: 200px;
-	position: sticky;
-	left: 0;
-	z-index: 10 !important;
-	background: rgba(0,0,0,.1) !important;
-}
-.permmatrix-th-perm {
-	width: 26px;
-	min-width: 26px;
-	max-width: 26px;
-	padding: 0 !important;
-	vertical-align: bottom;
-	height: 85px;
-	max-height: 85px;
-	overflow: hidden;
-}
-.permmatrix-vtext {
-	display: block;
-	writing-mode: vertical-lr;
-	transform: rotate(180deg);
-	white-space: nowrap;
-	font-size: 9px;
-	font-weight: 600;
-	height: 82px;
-	max-height: 82px;
-	overflow: hidden;
-	line-height: 26px;
-	padding: 2px 0;
-	text-align: left;
+    background: #eee;
+    border-bottom: 2px solid rgba(0,0,0,.15);
+    position: sticky;
+    top: 0;      
+    z-index: 20; 
 }
 
-/* Forum rows */
-.permmatrix-table tbody tr:nth-child(even) {
-	background: rgba(0,0,0,.025);
-}
-.permmatrix-table tbody tr:hover {
-	background: rgba(0,0,100,.04);
-}
+.permmatrix-th-forum, 
 .permmatrix-forum-cell {
-	padding: 4px 8px;
-	white-space: nowrap;
-	border-right: 2px solid rgba(0,0,0,.12);
-	border-bottom: 1px solid rgba(0,0,0,.07);
-	position: sticky;
-	left: 0;
-	background: inherit;
-	z-index: 2;
-	font-size: 0.9em;
+    position: sticky;
+    left: 0;
+    z-index: 10; 
+    background-color: #fff; 
+    border-right: 2px solid #ddd;
 }
+
+.permmatrix-table tbody tr:nth-child(even) .permmatrix-forum-cell {
+    background-color: #f9f9f9;
+}
+
+.permmatrix-table tbody tr:hover .permmatrix-forum-cell {
+    background-color: #f1f5f9;
+}
+
+.permmatrix-table thead th {
+    background: #eee;
+    border: 1px solid #ddd;
+    padding: 8px 2px;
+    vertical-align: bottom;
+}
+
+.permmatrix-th-forum {
+    text-align: left !important;
+    padding-left: 10px !important;
+    min-width: 250px;
+    background: #f9f9f9 !important;
+}
+
+.permmatrix-forum-cell {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    white-space: nowrap;
+    font-weight: 500;
+    position: sticky;
+    left: 0;
+    background: inherit;
+    z-index: 10;
+}
+
+.permmatrix-th-perm {
+    width: 32px;
+    height: 110px;
+}
+
+.permmatrix-vtext {
+    display: block;
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 700;
+    margin: 0 auto;
+    text-align: left;
+    color: #444;
+}
+
+.permmatrix-forum-cell {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
 .permmatrix-type-badge {
-	font-size: 0.78em;
-	margin-right: 4px;
-	opacity: .6;
+    font-size: 10px;
+    font-weight: bold;
+    margin-right: 5px;
+    color: #555;
 }
 
-/* Depth indentation */
-.permmatrix-depth-0 .permmatrix-forum-cell { font-weight: 700; padding-left: 6px;  }
-.permmatrix-depth-1 .permmatrix-forum-cell { font-weight: 600; padding-left: 18px; }
-.permmatrix-depth-2 .permmatrix-forum-cell { font-weight: 400; padding-left: 30px; }
-.permmatrix-depth-3 .permmatrix-forum-cell { font-weight: 400; padding-left: 42px; opacity: .8; }
+.permmatrix-yes   { background-color: #e6f4ea; color: #2d8a4e; font-weight: bold; }
+.permmatrix-never { background-color: #fce8e6; color: #c0392b; font-weight: bold; }
+.permmatrix-no    { background-color: #fff9e6; color: #b7860b; font-weight: bold; }
+.permmatrix-undef { background-color: #fff; color: #ccc; }
 
-/* Forum type colours */
-.permmatrix-type-cat   .permmatrix-type-badge { color: #c0392b; }
-.permmatrix-type-forum .permmatrix-type-badge { color: #2471a3; }
-.permmatrix-type-link  .permmatrix-type-badge { color: #888;    }
-.permmatrix-depth-0.permmatrix-type-cat .permmatrix-forum-cell { color: #c0392b; }
-
-/* Permission cells */
 .permmatrix-perm-cell {
-	text-align: center;
-	border-right: 1px solid rgba(0,0,0,.06);
-	border-bottom: 1px solid rgba(0,0,0,.06);
-	padding: 4px 0;
-	font-size: 13px;
-	width: 26px;
+    text-align: center;
+    border: 1px solid #ddd;
+    width: 32px;
+    font-size: 14px;
 }
-.permmatrix-yes   { color: #2d8a4e; }
-.permmatrix-never { color: #c0392b; }
-.permmatrix-no    { color: #b7860b; }
-.permmatrix-undef { color: #ccc;    }
 
-/* No-perm rows (dimmed) */
-.permmatrix-no-perm { opacity: .45; }
-.permmatrix-no-perm .permmatrix-forum-cell { font-style: italic; }
+.permmatrix-depth-0 .permmatrix-forum-cell { font-weight: bold; background: #fdfdfd; }
+.permmatrix-depth-1 .permmatrix-forum-cell { padding-left: 25px; }
+.permmatrix-depth-2 .permmatrix-forum-cell { padding-left: 45px; }
+.permmatrix-depth-3 .permmatrix-forum-cell { padding-left: 65px; }
+.permmatrix-table tbody tr:nth-child(even) { background: #fafafa; }
+.permmatrix-table tbody tr:hover td { background-color: #f1f5f9 !important; }
+.permmatrix-no-perm { opacity: 0.6; }
 
-/* Responsive */
-@media (max-width: 600px) {
-	.permmatrix-header { flex-direction: column; align-items: flex-start; }
+@media (max-width: 700px) {
+    .permmatrix-header { flex-direction: column; align-items: flex-start; }
 }
 </style>
 

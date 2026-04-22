@@ -20,7 +20,7 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, [
 	// Page
 	'PERMMATRIX_PAGE_TITLE'  => 'Permissions du forum',
-	'PERMMATRIX_NAV_LINK'    => 'Permissions',
+	'PERMMATRIX_NAV_LINK'    => 'Permissions du forum',
 	'PERMMATRIX_SELECT_GROUP'=> 'Sélectionner un groupe :',
 	'PERMMATRIX_GROUP_NAME'  => 'Groupe',
 	'PERMMATRIX_COL_FORUM'   => 'Forum / Section',
@@ -28,6 +28,15 @@ $lang = array_merge($lang, [
 	'PERMMATRIX_NO_GROUPS'   => 'Aucun groupe disponible à afficher.',
 	'LOGIN_EXPLAIN_PERMMATRIX' => 'Vous devez être connecté pour consulter la matrice des permissions.',
 	'PERMMATRIX_NOT_ALLOWED'   => 'Vous n\'avez pas la permission d\'accéder à la matrice des permissions.',
+
+	// User permissions page (admin-only)
+	'PERMMATRIX_USER_NAV_LINK'   => 'Permissions utilisateurs, modérateurs et administrateurs',
+	'PERMMATRIX_USER_PAGE_TITLE' => 'Permissions utilisateurs, modérateurs et administrateurs',
+	'PERMMATRIX_USER_INTRO'      => 'Cette page est réservée aux administrateurs. Elle affiche toutes les permissions globales (non liées à un forum spécifique) pour chaque groupe.',
+	'PERMMATRIX_COL_PERMISSION'  => 'Permission',
+	'PERMMATRIX_CAT_USER'        => 'Permissions utilisateur (u_*)',
+	'PERMMATRIX_CAT_MOD'         => 'Permissions modérateur globales (m_*)',
+	'PERMMATRIX_CAT_ADMIN'       => 'Permissions administrateur (a_*)',
 
 
 	// Légende

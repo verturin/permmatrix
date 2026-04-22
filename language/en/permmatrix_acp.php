@@ -24,6 +24,9 @@ $lang = array_merge($lang, [
 	'PERMMATRIX_ENABLED'               => 'Enable permission matrix',
 	'PERMMATRIX_ENABLED_EXPLAIN'       => 'When enabled, logged-in users can access the permission matrix page via the navigation bar.',
 
-	'PERMMATRIX_EXCLUDED_GROUPS'       => 'Hidden groups',
+	'PERMMATRIX_EXCLUDED_GROUPS'       => 'Hidden groups (forum permissions page)',
 	'PERMMATRIX_EXCLUDED_GROUPS_EXPLAIN' => 'Check the groups you want to hide from the permission matrix. All unchecked groups will be visible.',
+	
+	'PERMMATRIX_EXCLUDED_GROUPS_USER'       => 'Hidden groups (admin permissions page)',
+	'PERMMATRIX_EXCLUDED_GROUPS_USER_EXPLAIN' => 'Check the groups you want to hide from the admin permissions page (u_, m_, a_). All unchecked groups will be visible.',
 ]);

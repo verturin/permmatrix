@@ -1,14 +1,15 @@
 {
 	"name": "verturin/permmatrix",
 	"type": "phpbb-extension",
-	"description": "Displays a forum permission matrix per group, accessible to logged-in users via a dedicated page.",
+	"description": "Displays forum and admin permissions in interactive matrices. Compare permissions across groups with native ACP categorization, multi-select filtering, and customizable display options.",
 	"homepage": "https://github.com/verturin/permmatrix",
-	"version": "1.0.4",
-	"time": "2026-04-10",
+	"version": "1.1.0",
+	"time": "2026-04-22",
 	"license": "GPL-2.0-only",
 	"authors": [
 		{
 			"name": "verturin",
+			"homepage": "https://github.com/verturin",
 			"role": "Lead Developer"
 		}
 	],
@@ -20,7 +21,13 @@
 		"display-name": "Forum Permission Matrix",
 		"soft-require": {
 			"phpbb/phpbb": ">=3.3.14,<4.0.0@dev"
-		}
+		},
+		"version-check": {
+			"host": "verturin.github.io",
+			"directory": "/permmatrix",
+			"filename": "permmatrix_version.json",
+			"ssl": true
+		}		
 	},
 	"autoload": {
 		"psr-4": {
