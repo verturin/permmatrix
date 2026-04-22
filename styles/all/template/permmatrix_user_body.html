@@ -1,0 +1,376 @@
+<!-- INCLUDE overall_header.html -->
+
+<div id="wrap">
+	<div id="page-body">
+
+		<div class="permmatrix-header">
+			<h2 class="permmatrix-title">{{ lang('PERMMATRIX_USER_PAGE_TITLE') }}</h2>
+			<p class="permmatrix-current-group">{{ lang('PERMMATRIX_USER_INTRO') }}</p>
+		</div>
+
+		<!-- Legend -->
+		<div class="permmatrix-legend">
+			<span class="pm-yes">&#10004;</span> {{ lang('PERMMATRIX_LEGEND_YES') }}
+			&nbsp;&nbsp;
+			<span class="pm-never">&#10008;</span> {{ lang('PERMMATRIX_LEGEND_NEVER') }}
+			&nbsp;&nbsp;
+			<span class="pm-no">&ndash;</span> {{ lang('PERMMATRIX_LEGEND_NO') }}
+			&nbsp;&nbsp;
+			<span class="pm-undef">&middot;</span> {{ lang('PERMMATRIX_LEGEND_UNDEF') }}
+		</div>
+
+		<!-- Filter -->
+		<div class="permmatrix-filter">
+			<div class="permmatrix-filter-row">
+				<label for="permmatrix-type-filter">Type : </label>
+				<select id="permmatrix-type-filter" class="permmatrix-select">
+					<option value="all">Toutes les permissions</option>
+					<option value="u_">Permissions utilisateur (u_)</option>
+					<option value="m_">Permissions modérateur (m_)</option>
+					<option value="a_">Permissions administrateur (a_)</option>
+				</select>
+			</div>
+			
+			<div class="permmatrix-filter-row">
+				<label for="permmatrix-group-filter">Groupes : </label>
+				<select id="permmatrix-group-filter" class="permmatrix-select-multi" multiple size="5">
+					<!-- BEGIN group_cols -->
+					<option value="{{ group_cols.ID }}" selected>{{ group_cols.NAME }}</option>
+					<!-- END group_cols -->
+				</select>
+				<button type="button" id="permmatrix-select-all" class="permmatrix-btn">Tout sélectionner</button>
+				<button type="button" id="permmatrix-deselect-all" class="permmatrix-btn">Tout désélectionner</button>
+			</div>
+		</div>
+
+		<!-- Permission table -->
+		<div class="permmatrix-wrap">
+			<table class="permmatrix-table" cellspacing="0" cellpadding="0">
+				<thead>
+					<tr>
+						<th class="permmatrix-th-forum">{{ lang('PERMMATRIX_COL_PERMISSION') }}</th>
+						<!-- BEGIN group_cols -->
+						<th class="permmatrix-th-perm" data-group-id="{{ group_cols.ID }}" title="{{ group_cols.NAME }}">
+							<span class="permmatrix-vtext">{{ group_cols.NAME }}</span>
+						</th>
+						<!-- END group_cols -->
+					</tr>
+				</thead>
+				<tbody>
+					<!-- BEGIN rows -->
+
+					<!-- IF rows.IS_TYPE -->
+					<tr class="permmatrix-type-row" data-type="{{ rows.TYPE_PREFIX }}">
+						<td class="permmatrix-forum-cell" colspan="99">{{ rows.LABEL }}</td>
+					</tr>
+					<!-- ELSEIF rows.IS_CAT -->
+					<tr class="permmatrix-cat-row" data-type="{{ rows.TYPE_PREFIX }}">
+						<td class="permmatrix-forum-cell" colspan="99">{{ rows.LABEL }}</td>
+					</tr>
+					<!-- ELSEIF rows.IS_PERM -->
+					<tr class="permmatrix-row" data-type="{{ rows.TYPE_PREFIX }}">
+						<td class="permmatrix-forum-cell">
+							<span class="permmatrix-opt-code">{{ rows.OPT }}</span>
+							<span class="permmatrix-opt-label">{{ rows.LABEL }}</span>
+						</td>
+						<!-- BEGIN cells -->
+						<td class="permmatrix-perm-cell permmatrix-{{ rows.cells.STATUS }}" data-group-id="{{ rows.cells.GID }}">{{ rows.cells.ICON }}</td>
+						<!-- END cells -->
+					</tr>
+					<!-- ENDIF -->
+
+					<!-- END rows -->
+				</tbody>
+			</table>
+		</div>
+
+	</div><!-- /#page-body -->
+</div><!-- /#wrap -->
+
+<style>
+/* ── Permission Matrix Styles ────────────────────────────────────────────── */
+/* These styles are self-contained and work on any phpBB style.              */
+
+.permmatrix-header {
+    margin: 15px 0;
+    padding: 15px;
+    background: #f4f4f4;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.permmatrix-title { margin: 0; font-size: 1.3em; color: #333; }
+.permmatrix-current-group { margin: 0; font-size: 1em; color: #666; }
+
+.permmatrix-legend {
+	margin: 10px 0;
+	font-size: 12px;
+	padding: 5px;
+	border-bottom: 1px solid #eee;
+}
+
+.pm-yes   { color: #2d8a4e; font-weight: bold; padding: 0 4px; }
+.pm-never { color: #c0392b; font-weight: bold; padding: 0 4px; }
+.pm-no    { color: #b7860b; font-weight: bold; padding: 0 4px; }
+.pm-undef { color: #888; }
+
+/* Filter section */
+.permmatrix-filter {
+	margin: 10px 0;
+	padding: 15px;
+	background: #f9f9f9;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+.permmatrix-filter-row {
+	margin-bottom: 12px;
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+.permmatrix-filter-row:last-child {
+	margin-bottom: 0;
+}
+.permmatrix-filter label {
+	font-weight: 600;
+	min-width: 80px;
+	padding-top: 6px;
+}
+.permmatrix-select {
+	padding: 6px 10px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	background: white;
+	font-size: 14px;
+	min-width: 250px;
+}
+.permmatrix-select-multi {
+	padding: 6px 10px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	background: white;
+	font-size: 14px;
+	min-width: 300px;
+	flex: 1;
+}
+.permmatrix-btn {
+	padding: 6px 12px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	background: white;
+	cursor: pointer;
+	font-size: 13px;
+}
+.permmatrix-btn:hover {
+	background: #f0f0f0;
+}
+
+/* Table wrapper */
+.permmatrix-wrap {
+	overflow: visible;  
+	margin: 0 0 16px;
+	border: 1px solid rgba(0,0,0,.15);
+	border-radius: 4px;
+}
+.permmatrix-table {
+	border-collapse: collapse;
+	width: 100%;
+	font-size: 0.85em;
+}
+
+.permmatrix-table thead th {
+	background: #eee;
+	border: 1px solid #ddd;
+	border-bottom: 2px solid rgba(0,0,0,.15);
+	padding: 8px 2px;
+	vertical-align: bottom;
+	position: sticky;
+	top: 0;
+	z-index: 20;
+}
+.permmatrix-th-forum {
+	text-align: left !important;
+	padding-left: 10px !important;
+	min-width: 250px;
+	background: #f9f9f9!important;
+	position: sticky;
+	left: 0;
+	z-index: 30;
+	border-right: 2px solid #ddd;
+}
+.permmatrix-th-perm {
+	width: 32px;
+	min-width: 32px;
+	padding: 0 !important;
+	vertical-align: bottom;
+	height: 110px;
+}
+.permmatrix-th-perm.permmatrix-hidden {
+	display: none;
+}
+
+.permmatrix-vtext {
+	display: block;
+	writing-mode: vertical-lr;
+	transform: rotate(180deg);
+	white-space: nowrap;
+	font-size: 11px;
+	font-weight: 700;
+	margin: 0 auto;
+	text-align: left;
+	color: #444;
+}
+
+.permmatrix-table tbody tr:nth-child(even) { background: #fafafa; }
+.permmatrix-table tbody tr:hover td        { background-color: #f1f5f9 !important; }
+
+.permmatrix-forum-cell {
+	padding: 8px 10px;
+	white-space: nowrap;
+	border: 1px solid #ddd;
+	border-right: 2px solid #ddd;
+	font-size: 0.95em;
+	font-weight: 500;
+	position: sticky;
+	left: 0;
+	z-index: 10;
+	background: inherit;
+}
+.permmatrix-table tbody tr:nth-child(even) .permmatrix-forum-cell { 
+	background-color: #f9f9f9; 
+}
+.permmatrix-table tbody tr:hover .permmatrix-forum-cell { 
+	background-color: #f1f5f9; 
+}
+
+.permmatrix-opt-code {
+	font-family: "Courier New", monospace;
+	font-size: 0.85em;
+	color: #888;
+	margin-right: 10px;
+}
+.permmatrix-opt-label { color: #333; }
+
+/* Type section header (Permissions utilisateur / modérateur / admin) */
+.permmatrix-type-row td {
+	background: #1F3864 !important;
+	color: #fff !important;
+	font-weight: bold;
+	font-size: 1.05em;
+	padding: 10px 12px !important;
+	border: 1px solid #1F3864 !important;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+/* Category subheader (Profil / Publication / ...) */
+.permmatrix-cat-row td {
+	background: #dde8f5 !important;
+	color: #1F3864 !important;
+	font-weight: 600;
+	font-size: 0.95em;
+	padding: 7px 12px 7px 24px !important;
+	border: 1px solid #b8d0e8 !important;
+}
+
+.permmatrix-perm-cell {
+	text-align: center;
+	border: 1px solid #ddd;
+	width: 32px;
+	font-size: 14px;
+	padding: 4px 0;
+}
+.permmatrix-perm-cell.permmatrix-hidden {
+	display: none;
+}
+.permmatrix-yes   { background-color: #e6f4ea; color: #2d8a4e; font-weight: bold; }
+.permmatrix-never { background-color: #fce8e6; color: #c0392b; font-weight: bold; }
+.permmatrix-no    { background-color: #fff9e6; color: #b7860b; font-weight: bold; }
+.permmatrix-undef { background-color: #fff;    color: #ccc; }
+</style>
+
+<script>
+(function() {
+	// Filtre par type (u_, m_, a_)
+	var typeSelect = document.getElementById('permmatrix-type-filter');
+	if (typeSelect) {
+		typeSelect.addEventListener('change', function() {
+			var filter = this.value;
+			var rows = document.querySelectorAll('.permmatrix-table tbody tr');
+			
+			rows.forEach(function(row) {
+				var type = row.getAttribute('data-type');
+				if (filter === 'all' || type === filter) {
+					row.style.display = '';
+				} else {
+					row.style.display = 'none';
+				}
+			});
+		});
+	}
+	
+	// Filtre par groupes
+	var groupSelect = document.getElementById('permmatrix-group-filter');
+	var selectAllBtn = document.getElementById('permmatrix-select-all');
+	var deselectAllBtn = document.getElementById('permmatrix-deselect-all');
+	
+	function updateGroupVisibility() {
+		if (!groupSelect) return;
+		
+		var selectedGroups = Array.from(groupSelect.selectedOptions).map(function(opt) {
+			return opt.value;
+		});
+		
+		// Masquer/afficher les colonnes d'en-tête
+		var headers = document.querySelectorAll('.permmatrix-th-perm[data-group-id]');
+		headers.forEach(function(th) {
+			var groupId = th.getAttribute('data-group-id');
+			if (selectedGroups.indexOf(groupId) === -1) {
+				th.classList.add('permmatrix-hidden');
+			} else {
+				th.classList.remove('permmatrix-hidden');
+			}
+		});
+		
+		// Masquer/afficher les cellules de données
+		var cells = document.querySelectorAll('.permmatrix-perm-cell[data-group-id]');
+		cells.forEach(function(td) {
+			var groupId = td.getAttribute('data-group-id');
+			if (selectedGroups.indexOf(groupId) === -1) {
+				td.classList.add('permmatrix-hidden');
+			} else {
+				td.classList.remove('permmatrix-hidden');
+			}
+		});
+	}
+	
+	if (groupSelect) {
+		groupSelect.addEventListener('change', updateGroupVisibility);
+	}
+	
+	if (selectAllBtn && groupSelect) {
+		selectAllBtn.addEventListener('click', function() {
+			Array.from(groupSelect.options).forEach(function(opt) {
+				opt.selected = true;
+			});
+			updateGroupVisibility();
+		});
+	}
+	
+	if (deselectAllBtn && groupSelect) {
+		deselectAllBtn.addEventListener('click', function() {
+			Array.from(groupSelect.options).forEach(function(opt) {
+				opt.selected = false;
+			});
+			updateGroupVisibility();
+		});
+	}
+})();
+</script>
+
+<!-- INCLUDE overall_footer.html -->

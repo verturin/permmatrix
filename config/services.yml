@@ -27,3 +27,16 @@ services:
             - '@user'
             - '%core.root_path%'
             - '%core.php_ext%'
+
+    verturin.permmatrix.user_controller:
+        class: verturin\permmatrix\controller\user_controller
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@controller.helper'
+            - '@dbal.conn'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'

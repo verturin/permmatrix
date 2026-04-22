@@ -2,3 +2,8 @@ verturin_permmatrix:
     path: /permmatrix
     defaults:
         _controller: verturin.permmatrix.controller:handle
+
+verturin_permmatrix_user:
+    path: /permmatrix-user
+    defaults:
+        _controller: verturin.permmatrix.user_controller:handle

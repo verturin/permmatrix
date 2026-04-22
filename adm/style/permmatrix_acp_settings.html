@@ -38,6 +38,22 @@
 				<!-- END groups -->
 			</dd>
 		</dl>
+		
+		<dl>
+			<dt>
+				<label>{{ lang('PERMMATRIX_EXCLUDED_GROUPS_USER') }}</label>
+				<span>{{ lang('PERMMATRIX_EXCLUDED_GROUPS_USER_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<!-- BEGIN groups -->
+				<!-- IF groups.EXCLUDED_USER -->
+				<label><input type="checkbox" name="excluded_groups_user[]" value="{{ groups.ID }}" checked="checked"> {{ groups.NAME }}</label>&nbsp;&nbsp;
+				<!-- ELSE -->
+				<label><input type="checkbox" name="excluded_groups_user[]" value="{{ groups.ID }}"> {{ groups.NAME }}</label>&nbsp;&nbsp;
+				<!-- ENDIF -->
+				<!-- END groups -->
+			</dd>
+		</dl>
 
 	</fieldset>
 

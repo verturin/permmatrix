@@ -1,117 +1,112 @@
-# Forum Permission Matrix — verturin/permmatrix
+# Forum Permission Matrix
 
-> Extension phpBB 3.3 — Matrice des permissions de forum par groupe
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/verturin/permmatrix/releases)
+[![phpBB](https://img.shields.io/badge/phpBB-3.3.14+-orange.svg)](https://www.phpbb.com/)
+[![License](https://img.shields.io/badge/license-GPL--2.0-green.svg)](LICENSE)
 
-[![Version](https://img.shields.io/badge/version-1.0.4-blue.svg)](CHANGELOG.md)
-[![phpBB](https://img.shields.io/badge/phpBB-%E2%89%A53.3.14-orange.svg)](https://www.phpbb.com)
-[![PHP](https://img.shields.io/badge/PHP-%E2%89%A57.2-8892BF.svg)](https://php.net)
-[![Licence](https://img.shields.io/badge/licence-GPL--2.0--only-green.svg)](LICENSE)
+Interactive permission matrices for phpBB 3.3+ displaying forum and admin permissions in easy-to-read tables with multi-group comparison, native ACP categorization, and real-time filtering.
 
----
+## Features
 
-## Description
+### 🗂️ Dual Permission Views
 
-**Forum Permission Matrix** affiche un tableau croisé lisible des permissions de forum pour chaque groupe phpBB. Les membres autorisés accèdent à la page via un lien dans la barre de navigation et peuvent filtrer l'affichage par groupe.
+- **Forum Permissions Page** (`/permmatrix`)
+  - Matrix of forum permissions (f_*) by group
+  - One group, all forums in columns
+  - Sticky headers and first column for easy navigation
+  
+- **Admin Permissions Page** (`/permmatrix-user`)
+  - User (u_*), Moderator (m_*), and Admin (a_*) permissions
+  - Multi-group comparison with up to all groups simultaneously
+  - Native phpBB ACP categorization (Profile, Posts, PM, Misc, Settings, etc.)
 
-### Fonctionnalités
+### 🎛️ Interactive Filtering
 
-- Tableau des 24 permissions de forum standard (f_list, f_read, f_post, etc.)
-- Indicateurs visuels : ✔ Autorisé · ✖ Jamais · – Non/Hérité · · Non défini
-- Sélecteur de groupe via menu déroulant
-- Hiérarchie des forums avec indentation (profondeur 0–3)
-- Résolution des rôles de permission
-- Contrôle d'accès via la permission native phpBB `u_permmatrix_view`
-- Possibilité de masquer certains groupes depuis l'ACP
-- Bilingue : Français / English
+- **Type Filter**: Show only User, Moderator, or Admin permissions
+- **Group Multi-Select**: Compare multiple groups side-by-side
+- **Quick Selection Buttons**: Select/deselect all groups instantly
+- **Real-Time Updates**: JavaScript-based filtering without page reload
 
----
+### ⚙️ Administrative Control
 
-## Prérequis
+- **ACP Configuration Panel**: Enable/disable matrix access
+- **Hidden Groups Management**: 
+  - Separate control for forum page and admin page
+  - Hide irrelevant groups (Bots, COPPA users, etc.)
+  - Filtered lists appear in both ACP and frontend
 
-| Dépendance | Version minimum |
-|------------|----------------|
-| phpBB      | 3.3.14         |
-| PHP        | 7.2.0          |
+### 🎨 Modern Interface
 
----
+- **Navbar Integration**: 
+  - Icon-only display on desktop (fa-users for forums, fa-shield for admin)
+  - Full text labels in mobile burger menu
+  - Responsive hiding on small screens
+- **Color-Coded Cells**:
+  - ✔️ Green = Allowed (YES)
+  - ✖️ Red = Never (NEVER)
+  - – Yellow = Not set (NO)
+  - · Grey = Undefined
+- **Sticky Headers**: First column and top row stay visible while scrolling
+
+### 🌍 Multilingual
+
+- English (en)
+- French (fr)
+- Easy to translate to other languages
 
 ## Installation
 
-1. Copier le dossier `permmatrix/` dans `ext/verturin/` sur votre serveur.
-2. Aller dans **ACP → Personnaliser → Gérer les extensions**.
-3. Activer **Forum Permission Matrix**.
-4. Aller dans **ACP → Permissions** et attribuer la permission `u_permmatrix_view` aux groupes souhaités.
-5. Vider le cache ACP.
+1. Download the latest release from [Releases](https://github.com/verturin/permmatrix/releases)
+2. Extract and upload `permmatrix/` folder to `ext/verturin/`
+3. Enable in `ACP` → `Customise` → `Extensions`
+4. Configure in `ACP` → `Extensions` → `Permission Matrix Settings`
+5. Clear cache
+
+See [INSTALL.md](INSTALL.md) for detailed instructions.
+
+## Usage
+
+### Accessing Pages
+
+**Desktop**: Click navbar icons (👥 for forums, 🛡️ for admin)  
+**Mobile**: Open burger menu  
+**Direct**: `/permmatrix` and `/permmatrix-user`
+
+### Permission Legend
+
+| Symbol | Meaning |
+|--------|---------|
+| ✔️ | Allowed (YES) |
+| ✖️ | Never (NEVER) |
+| – | Not set (NO) |
+| · | Undefined |
+
+## Upgrading to 1.1.0
+
+From 1.0.x:
+
+1. Backup database and files
+2. Disable extension in ACP
+3. Replace 6 files (see [INSTALL.md](INSTALL.md#upgrading))
+4. Delete `cache/production/`
+5. Re-enable extension
+6. Purge cache
+
+## Requirements
+
+- phpBB 3.3.14+
+- PHP 7.2+
+- JavaScript-enabled browser
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/verturin/permmatrix/issues)
+- **Documentation**: [INSTALL.md](INSTALL.md) · [CHANGELOG.md](CHANGELOG.md)
+
+## License
+
+GPL-2.0-only - See [LICENSE](LICENSE)
 
 ---
 
-## Configuration ACP
-
-**ACP → Extensions → Matrice des permissions → Paramètres**
-
-| Option | Description |
-|--------|-------------|
-| Activer la matrice | Active/désactive la page et le lien navbar |
-| Groupes masqués | Groupes à exclure de l'affichage de la matrice |
-
----
-
-## Permission d'accès
-
-La permission `u_permmatrix_view` est disponible dans **ACP → Permissions → Permissions de l'utilisateur** sous l'onglet **Divers**.
-
-- **OUI** — le groupe peut voir et accéder à la matrice
-- **NON** — accès refusé (erreur 403)
-- **JAMAIS** — accès toujours refusé, même si hérité OUI
-
-> Si aucun groupe n'a la permission, personne ne peut accéder à la page (lien navbar masqué).
-
----
-
-## Désinstallation
-
-1. **ACP → Personnaliser → Gérer les extensions** → Désactiver puis **Supprimer les données**.
-2. Supprimer le dossier `ext/verturin/permmatrix/`.
-
----
-
-## Structure
-
-```
-ext/verturin/permmatrix/
-├── acp/
-│   ├── main_info.php
-│   └── main_module.php
-├── adm/style/
-│   ├── event/overall_header_navigation_prepend.html
-│   └── permmatrix_acp_settings.html
-├── config/
-│   ├── routing.yml
-│   └── services.yml
-├── controller/
-│   └── main_controller.php
-├── event/
-│   └── main_listener.php
-├── language/
-│   ├── en/  (permmatrix.php · permmatrix_acp.php · info_acp_permmatrix.php · permissions_permmatrix.php)
-│   └── fr/  (idem)
-├── migrations/
-│   └── install_data.php
-├── styles/all/template/
-│   ├── event/overall_header_navigation_prepend.html
-│   └── permmatrix_body.html
-├── composer.json
-└── ext.php
-```
-
----
-
-## Changelog
-
-Voir [CHANGELOG.md](CHANGELOG.md).
-
----
-
-## Licence
-
-[GPL-2.0-only](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html) — © 2026 verturin
+**Made with ❤️ for the phpBB community** · [verturin](https://github.com/verturin)
