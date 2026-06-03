@@ -1,0 +1,95 @@
+<!-- INCLUDE overall_header.html -->
+
+<a id="maincontent"></a>
+
+<h1>{{ lang('PERMMATRIX_BACKUP') }}</h1>
+
+<p>{{ lang('PERMMATRIX_BACKUP_INTRO') }}</p>
+
+<form id="permmatrix_export" method="post" action="{{ U_ACTION }}">
+
+	<fieldset>
+		<legend>{{ lang('PERMMATRIX_BACKUP_EXPORT_TITLE') }}</legend>
+
+		<p>{{ lang('PERMMATRIX_BACKUP_EXPORT_EXPLAIN') }}</p>
+
+		<dl>
+			<dt>
+				<label for="ext_name">{{ lang('PERMMATRIX_BACKUP_SELECT_EXT') }}</label>
+				<span>{{ lang('PERMMATRIX_BACKUP_SELECT_EXT_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<select id="ext_name" name="ext_name" onchange="permmatrixShowPerms(this);">
+					<option value="">— {{ lang('SELECT_OPTION') }} —</option>
+					<!-- BEGIN extensions -->
+					<option value="{{ extensions.NAME }}" data-perms="{{ extensions.PERMS_LIST }}">{{ extensions.NAME }} ({{ extensions.PERM_COUNT }} {{ lang('PERMMATRIX_BACKUP_PERMS') }})</option>
+					<!-- END extensions -->
+				</select>
+			</dd>
+		</dl>
+
+		<dl>
+			<dt>
+				<label>{{ lang('PERMMATRIX_BACKUP_PERMS_PREVIEW') }}</label>
+				<span>{{ lang('PERMMATRIX_BACKUP_PERMS_PREVIEW_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<div id="permmatrix_perms_preview" style="padding:8px; background:#f5f5f5; border:1px solid #ccc; border-radius:3px; font-family:monospace; font-size:0.9em; min-height:1.4em; color:#666;">
+					—
+				</div>
+			</dd>
+		</dl>
+
+		<p class="submit-buttons">
+			<input class="button1" type="submit" name="export" value="{{ lang('PERMMATRIX_BACKUP_EXPORT_BTN') }}">
+		</p>
+	</fieldset>
+
+	{{ S_FORM_TOKEN }}
+</form>
+
+<form id="permmatrix_import" method="post" action="{{ U_ACTION }}" enctype="multipart/form-data">
+
+	<fieldset>
+		<legend>{{ lang('PERMMATRIX_BACKUP_IMPORT_TITLE') }}</legend>
+
+		<p>{{ lang('PERMMATRIX_BACKUP_IMPORT_EXPLAIN') }}</p>
+
+		<div class="errorbox">
+			<p>{{ lang('PERMMATRIX_BACKUP_IMPORT_WARNING') }}</p>
+		</div>
+
+		<dl>
+			<dt>
+				<label for="import_file">{{ lang('PERMMATRIX_BACKUP_FILE') }}</label>
+				<span>{{ lang('PERMMATRIX_BACKUP_FILE_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input type="file" id="import_file" name="import_file" accept=".json">
+			</dd>
+		</dl>
+
+		<p class="submit-buttons">
+			<input class="button2" type="submit" name="import" value="{{ lang('PERMMATRIX_BACKUP_IMPORT_BTN') }}">
+		</p>
+	</fieldset>
+
+	{{ S_FORM_TOKEN }}
+</form>
+
+<script>
+function permmatrixShowPerms(select) {
+	var opt = select.options[select.selectedIndex];
+	var preview = document.getElementById('permmatrix_perms_preview');
+	var perms = opt.getAttribute('data-perms');
+	if (perms && perms.length > 0) {
+		preview.style.color = '#222';
+		preview.textContent = perms;
+	} else {
+		preview.style.color = '#666';
+		preview.textContent = '—';
+	}
+}
+</script>
+
+<!-- INCLUDE overall_footer.html -->

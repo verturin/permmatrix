@@ -20,4 +20,5 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, [
 	'PERMMATRIX_ACP'      => 'Permission Matrix',
 	'PERMMATRIX_SETTINGS' => 'Permission Matrix Settings',
+	'PERMMATRIX_BACKUP'   => 'Permission Backup / Restore',
 ]);

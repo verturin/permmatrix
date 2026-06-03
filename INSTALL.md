@@ -1,14 +1,13 @@
 # Installation Guide
 
-Complete installation and upgrade instructions for **Forum Permission Matrix** extension.
+Complete installation, upgrade and usage instructions for **Forum Permission Matrix**.
 
 ## Table of Contents
 
 - [Requirements](#requirements)
 - [Fresh Installation](#fresh-installation)
 - [Upgrading](#upgrading)
-  - [From 1.0.x to 1.1.0](#from-10x-to-110)
-- [Post-Installation](#post-installation)
+- [Using the Backup / Restore module](#using-the-backup--restore-module)
 - [Uninstallation](#uninstallation)
 - [Troubleshooting](#troubleshooting)
 
@@ -16,478 +15,244 @@ Complete installation and upgrade instructions for **Forum Permission Matrix** e
 
 ## Requirements
 
-### Minimum Requirements
-
 | Component | Version |
 |-----------|---------|
 | phpBB | 3.3.14 or higher |
-| PHP | 7.2.0 or higher |
+| PHP | 7.2 or higher |
 | Browser | Modern browser with JavaScript |
 
-### Recommended
-
-- phpBB 3.3.14+
-- PHP 8.0+ (for better performance)
-- HTTPS enabled
-- Browser: Chrome 90+, Firefox 88+, Safari 14+
-
-### Server Requirements
-
-- Write permissions on `ext/` directory
-- Ability to delete `cache/production/` folder
-- FTP or SSH access for file uploads
+Server: write access on `ext/`, ability to remove `cache/production/`, FTP or SSH access.
 
 ---
 
 ## Fresh Installation
 
-### Step 1: Download
+### Step 1 — Download
 
-**Option A: Release Package (Recommended)**
+- Latest release: [https://github.com/verturin/permmatrix/releases/latest](https://github.com/verturin/permmatrix/releases/latest)
+- Download `permmatrix-v1.2.5.zip`
 
-1. Go to [Releases](https://github.com/verturin/permmatrix/releases)
-2. Download `permmatrix-v1.1.0.zip`
-3. Extract the ZIP file
+### Step 2 — Upload
 
-**Option B: Git Clone**
-
-```bash
-cd /path/to/phpbb/ext
-mkdir -p verturin
-cd verturin
-git clone https://github.com/verturin/permmatrix.git
-```
-
-### Step 2: Upload Files
-
-Upload the `permmatrix/` folder to your phpBB installation:
+Extract and upload to your phpBB installation:
 
 ```
 phpBB/
 └── ext/
     └── verturin/
         └── permmatrix/
-            ├── acp/
-            ├── adm/
-            ├── config/
-            ├── controller/
+            ├── acp/                  (ACP modules, including backup_module)
+            ├── adm/                  (ACP templates)
+            ├── config/               (services & routing)
+            ├── controller/           (page controllers)
             ├── docs/
-            ├── event/
-            ├── language/
+            ├── event/                (navbar listener)
+            ├── language/             (en, fr)
             ├── migrations/
-            ├── styles/
+            ├── styles/               (frontend templates & icon)
             ├── composer.json
             ├── ext.php
             ├── LICENSE
             └── README.md
 ```
 
-**Via FTP**: Upload the entire `permmatrix/` directory  
-**Via SSH**: Use `scp` or `rsync` to transfer files
+### Step 3 — Enable the extension
 
-### Step 3: Enable Extension
+1. ACP → `Customise` → `Manage extensions`
+2. Find **Forum Permission Matrix** → click `Enable`
+3. Wait for migrations to complete (this also registers the new Backup ACP module)
 
-1. Navigate to `ACP` (Admin Control Panel)
-2. Go to `Customise` → `Manage extensions`
-3. Find **Forum Permission Matrix**
-4. Click `Enable`
-5. Wait for the installation process to complete
+### Step 4 — Clear cache
 
-### Step 4: Clear Cache
+ACP → `General` → `Purge the cache`, **and** delete `cache/production/` via FTP for safety.
 
-1. Go to `ACP` → `General` → `Purge the cache`
-2. Click `Run now`
+### Step 5 — Grant permission
 
-Alternatively, manually delete:
-```bash
-rm -rf cache/production/*
-```
+The extension adds the permission `Can view permission matrix` (`u_permmatrix_view`).
 
-### Step 5: Configure Permissions
+- ACP → `Permissions` → `Groups' permissions`
+- Pick a group → User permissions → Advanced permissions
+- Set `Can view permission matrix` to **YES**
 
-1. Go to `ACP` → `Permissions` → `Permission roles`
-2. Edit **Standard User Role** (or create custom role)
-3. In **User Permissions** section, find:
-   - **Can view permission matrix** (`u_permmatrix_view`)
-4. Set to `YES`
-5. Click `Submit`
+### Step 6 — Configure
 
-Alternatively, set per-group:
-1. `ACP` → `Permissions` → `Group permissions`
-2. Select group (e.g., "Registered users")
-3. Click `Advanced permissions`
-4. Enable `u_permmatrix_view`
+ACP → `Extensions` → `Matrice des permissions` → `Paramètres — Matrice des permissions`
 
-### Step 6: Configure Extension
-
-1. Go to `ACP` → `Extensions` → `Permission Matrix Settings`
-2. **Enable permission matrix**: Set to `Yes`
-3. **Hidden Groups (Forum Page)**: Check groups to hide from `/permmatrix`
-4. **Hidden Groups (Admin Page)**: Check groups to hide from `/permmatrix-user`
-5. Click `Submit`
-
-**Example Configuration**:
-- Hide "Bots" from both pages
-- Hide "COPPA Users" from both pages
-- Hide "Administrators" from admin page (to compare only lower groups)
+- **Activer la matrice des permissions** : `Oui`
+- **Groupes masqués (page permissions forum)** : groups you don't want listed on `/permmatrix`
+- **Groupes masqués (page permissions admin)** : groups you don't want listed on `/permmatrix-user`
 
 ---
 
 ## Upgrading
 
-### From 1.0.x to 1.1.0
+### From any 1.x to 1.2.5
 
-**Estimated Time**: 5-10 minutes  
-**Downtime**: Minimal (< 1 minute if cache cleared efficiently)
+**Estimated time**: 5 minutes  
+**Downtime**: under 1 minute
 
-#### Step 1: Backup
+#### 1. Backup first
 
-**Database Backup**:
 ```bash
-mysqldump -u username -p database_name > backup_$(date +%Y%m%d).sql
+mysqldump -u user -p dbname > backup_$(date +%Y%m%d).sql
+tar -czf permmatrix_backup.tar.gz ext/verturin/permmatrix/
 ```
 
-Or use phpMyAdmin: `Export` → `SQL` → `Go`
+If you have valuable extension permission setups (any extension, not just permmatrix), now is also a great time to use the new Backup/Restore tab to download a JSON snapshot.
 
-**File Backup**:
-```bash
-tar -czf permmatrix_backup_$(date +%Y%m%d).tar.gz ext/verturin/permmatrix/
-```
+#### 2. Disable the extension
 
-Or download entire `ext/verturin/permmatrix/` folder via FTP
+ACP → `Customise` → `Manage extensions` → Disable `Forum Permission Matrix`.
 
-#### Step 2: Disable Extension
+#### 3. Replace files
 
-1. Go to `ACP` → `Customise` → `Manage extensions`
-2. Find **Forum Permission Matrix**
-3. Click `Disable`
-4. Wait for confirmation
+Replace the **entire content** of `ext/verturin/permmatrix/` via FTP. Easier and safer than file-by-file (avoids missing the new `acp/backup_info.php`, `acp/backup_module.php`, `adm/style/permmatrix_acp_backup.html`, etc.).
 
-#### Step 3: Replace Files
-
-Download v1.1.0 and replace **only these 6 files**:
-
-```
-ext/verturin/permmatrix/
-├── controller/user_controller.php              ← REPLACE
-├── acp/main_module.php                         ← REPLACE
-├── adm/style/permmatrix_acp_settings.html      ← REPLACE
-├── language/en/permmatrix_acp.php              ← REPLACE
-├── language/fr/permmatrix_acp.php              ← REPLACE
-└── styles/all/template/permmatrix_user_body.html  ← REPLACE
-```
-
-**Via FTP**: Overwrite the 6 files above  
-**Via SSH**:
-```bash
-cd /path/to/phpbb/ext/verturin/permmatrix
-# Upload new files here, overwriting old ones
-```
-
-**Optional** (recommended for GitHub tracking):
-```
-composer.json                                   ← UPDATE version to 1.1.0
-docs/permmatrix_version.json                    ← UPDATE version info
-```
-
-#### Step 4: Clear Cache
-
-**IMPORTANT**: Delete the production cache completely
+#### 4. Delete cache
 
 ```bash
 rm -rf cache/production/*
 ```
 
-Or via FTP: Delete everything in `cache/production/` folder
+(or delete everything inside `cache/production/` via FTP)
 
-#### Step 5: Re-enable Extension
+#### 5. Re-enable
 
-1. Go to `ACP` → `Customise` → `Manage extensions`
-2. Find **Forum Permission Matrix**
-3. Click `Enable`
-4. The extension will run any necessary database migrations
+ACP → `Customise` → `Manage extensions` → Enable `Forum Permission Matrix`.
 
-#### Step 6: Purge Cache Again
+The migration `add_backup_module` will register the new ACP tab automatically.
 
-1. `ACP` → `General` → `Purge the cache`
-2. Click `Run now`
+#### 6. Final cache purge
 
-#### Step 7: Verify Upgrade
+ACP → `General` → `Purge the cache`.
 
-1. Check extension version:
-   - `ACP` → `Customise` → `Manage extensions`
-   - Should show version **1.1.0**
+#### 7. Verify
 
-2. Test both pages:
-   - Navigate to `/permmatrix` (forum permissions)
-   - Navigate to `/permmatrix-user` (admin permissions)
+- Extension version reads **1.2.5** in the extensions list
+- `ACP` → `Extensions` → `Matrice des permissions` shows **two** entries:
+  - `Paramètres — Matrice des permissions`
+  - `Sauvegarde / Restauration des permissions` ← new
 
-3. Verify new features:
-   - Multi-select on `/permmatrix-user` page
-   - "Select All" / "Deselect All" buttons
-   - Separate "Hidden Groups" sections in ACP
-
-#### Migration Notes
-
-**What's New in 1.1.0**:
-- Multi-group selection on admin permissions page
-- Separate ACP configuration for forum vs admin hidden groups
-- Improved column layout and dimensions
-
-**Breaking Changes**: None - fully backward compatible
-
-**Database Changes**: 
-- New config key: `verturin_permmatrix_excluded_groups_user`
-- Automatically created during re-enable step
-
-**No data loss**: All existing settings preserved
+No data is lost during the upgrade; all existing settings (including hidden-groups configuration) are preserved.
 
 ---
 
-## Post-Installation
+## Using the Backup / Restore module
 
-### Initial Configuration
+The new ACP tab lets you save and restore the permissions associated with **any installed extension**, not just permmatrix itself.
 
-After installation or upgrade, configure these settings:
+### Why it exists
 
-#### 1. Hidden Groups
+When you click **Delete data** on an extension in the ACP, phpBB removes all its permissions. After re-enabling, those permissions exist again but are **empty** — you have to reconfigure every group manually. This module solves that.
 
-**Best Practice**: Hide these groups on both pages:
-- ✅ Bots
-- ✅ Guests (if not analyzing public access)
-- ✅ COPPA Users (unless actively used)
+### How the detection works
 
-**Use Case Specific**:
-- Hide "Administrators" from admin page when comparing lower-level groups
-- Hide "Newly Registered Users" if identical to "Registered Users"
+The module reads the `migrations/*.php` files of each enabled extension and extracts the `permission.add` calls. This is the only reliable way (phpBB itself does not store which extension created which permission), and the result is exact — no false positives from other extensions.
 
-#### 2. Permissions
+When you select an extension in the dropdown, a preview box shows the **exact list of permissions** that will be exported.
 
-**Who should access**:
-- ✅ Administrators (full access)
-- ✅ Global Moderators (for auditing)
-- ✅ Registered Users (optional, for transparency)
-- ❌ Guests (permission denied by default)
+### Exporting
 
-**Setting permissions**:
-```
-ACP → Permissions → Groups' permissions
-→ Select group → User permissions → Advanced permissions
-→ Enable "Can view permission matrix"
-```
+1. ACP → Matrice des permissions → **Sauvegarde / Restauration des permissions**
+2. Pick the extension from the dropdown
+3. Verify the preview of detected permissions
+4. Click **Télécharger la sauvegarde**
+5. Save the generated `permmatrix_backup_<extension>_<date>.json` somewhere safe
 
-#### 3. Testing
+### What the backup contains
 
-After configuration, test as different user types:
+- `options` — the permission definitions (auth_option, is_global, is_local, founder_only)
+- `groups` — direct permissions per group (group_name → auth_option → setting)
+- `users` — direct permissions per user
+- `roles` — full role definitions that contain any of the extension's permissions
+- `roles_data` — the per-permission values inside those roles
+- `group_roles` — which group has which role (e.g. MODERATORS has ROLE_USER_STANDARD)
+- `user_roles` — same for individual users
 
-1. **As Administrator**:
-   - Access `/permmatrix` - should work
-   - Access `/permmatrix-user` - should work
-   - Verify all features functional
+Everything is keyed by **name** (group name, role name, permission name, username), never by numeric ID. This is what makes restoration robust after IDs change following a `Delete data` cycle.
 
-2. **As Regular User** (if enabled):
-   - Access both pages
-   - Verify permission-based access
-   - Check navbar icons appear
+### Restoring
 
-3. **As Guest** (logged out):
-   - Should see "Permission denied" or login prompt
+1. **Re-enable the target extension first**. Its permissions must exist in the database (in `phpbb_acl_options`), otherwise the restore can't map names → IDs.
+2. Open the same ACP page → Import section
+3. Select your previously downloaded JSON file
+4. Click **Restaurer les permissions**
 
-### Customization
+A confirmation message tells you how many group permissions, roles and user permissions were restored, e.g.:
 
-#### Custom Styles
+> Restauration réussie : 13 permission(s) de groupes, 0 rôle(s), 0 permission(s) utilisateur restaurées.
 
-The extension uses `styles/all/` for universal compatibility. If you want style-specific overrides:
+The permission cache is cleared automatically after import; users see the new permissions immediately.
 
-```
-styles/
-└── your_custom_style/
-    └── template/
-        └── permmatrix_body.html          ← Override forum page
-        └── permmatrix_user_body.html     ← Override admin page
-```
+### Notes & limits
 
-#### Language Customization
-
-To modify text labels:
-
-1. Copy language files to your custom language pack
-2. Edit keys in:
-   - `language/{lang}/permmatrix.php`
-   - `language/{lang}/permmatrix_acp.php`
-   - `language/{lang}/permissions_permmatrix.php`
-
-#### Icon Customization
-
-To replace navbar icons:
-
-Edit `styles/all/template/event/overall_header_navigation_prepend.html`:
-
-```html
-<!-- Change fa-users to custom icon -->
-<i class="icon fa-custom fa-fw" aria-hidden="true"></i>
-```
+- Only **enabled** extensions appear in the dropdown.
+- An extension that declares no permissions (e.g. pure styling extensions) does not appear.
+- If a role from the backup no longer exists in the target system, it is recreated; if it already exists with the same name, its values are updated, not duplicated.
+- If a group or user from the backup no longer exists, that line is silently skipped (no error).
 
 ---
 
 ## Uninstallation
 
-### Full Removal
+### Step 1 — Disable
 
-**WARNING**: This will permanently remove all extension data.
+ACP → `Customise` → `Manage extensions` → Disable.
 
-#### Step 1: Disable Extension
+### Step 2 — Delete data (optional)
 
-1. `ACP` → `Customise` → `Manage extensions`
-2. Click `Disable` on **Forum Permission Matrix**
+After disabling, you can click `Delete data` to remove:
+- The permission `u_permmatrix_view`
+- All `verturin_permmatrix_*` config entries
+- The ACP module registrations (both `settings` and `backup`)
 
-#### Step 2: Purge Data
+### Step 3 — Remove files
 
-1. After disabling, click `Delete Data`
-2. Confirm the action
-3. This removes:
-   - Permission `u_permmatrix_view` from all users/groups
-   - Config keys: `verturin_permmatrix_*`
-   - Any database modifications
-
-#### Step 3: Delete Files
-
-Via FTP or SSH:
 ```bash
 rm -rf ext/verturin/permmatrix/
-```
-
-#### Step 4: Clear Cache
-
-```bash
 rm -rf cache/production/*
-```
-
-Or `ACP` → `General` → `Purge the cache`
-
-### Data Preservation
-
-If you plan to reinstall later and want to preserve settings:
-
-**Before uninstalling**, export these config values:
-```sql
-SELECT config_name, config_value 
-FROM phpbb_config 
-WHERE config_name LIKE 'verturin_permmatrix%';
-```
-
-Save the output. After reinstalling, manually restore via:
-```sql
-UPDATE phpbb_config SET config_value = 'value' WHERE config_name = 'key';
 ```
 
 ---
 
 ## Troubleshooting
 
-### Installation Issues
+### "Un fichier d'information de module requis est manquant"
 
-#### "Extension does not exist" error
+You uploaded an incomplete copy of the extension — typically missing `acp/backup_info.php`. Re-upload the full `permmatrix/` folder, purge `cache/production/`, then re-enable.
 
-**Cause**: Files not uploaded to correct location
+### Import: "Erreur lors du téléversement du fichier" (with a code)
 
-**Solution**:
-1. Verify path: `ext/verturin/permmatrix/`
-2. Check `composer.json` exists in that folder
-3. Ensure folder name is exactly `permmatrix` (lowercase)
+| Code | Meaning |
+|---|---|
+| `code -1` | phpBB did not receive a file at all. Check that the `<form>` has `enctype="multipart/form-data"` (it does by default — only an issue if you customized the template). |
+| `code 1` or `code 2` | The JSON file is bigger than `upload_max_filesize` / `post_max_size` in `php.ini`. Very rare for permission backups (they are typically a few KB). |
+| `code 4` | No file was selected before clicking Restaurer. |
+| `read failed` | The temp file could not be read. Server permissions issue on `/tmp` or PHP `upload_tmp_dir`. |
 
-#### "This extension is not compatible"
+### Import: "Fichier invalide ou format non reconnu"
 
-**Cause**: phpBB version too old
+The JSON is not a permmatrix backup file, or it has been corrupted/edited. The first key in the file must be `"format": "permmatrix_backup"`.
 
-**Solution**:
-1. Check phpBB version: `ACP` → `System`
-2. Requires phpBB 3.3.14+
-3. Update phpBB if needed
+### Custom groups don't appear in the JSON
 
-#### Database migration fails
+The export only includes groups that have **at least one permission cocheée OUI/JAMAIS** for the chosen extension. A group whose entire tab is left at NO will not appear — there is genuinely nothing to save for it.
 
-**Cause**: Missing permissions or corrupted cache
+### "Illegal use of $_FILES"
 
-**Solution**:
-1. Clear cache manually: `rm -rf cache/production/*`
-2. Check database permissions (need CREATE, ALTER, INSERT)
-3. Try disabling/re-enabling
-4. Check phpBB error logs
+This was a bug in 1.2.3 and earlier. Upgrade to 1.2.4+.
 
-### Upgrade Issues
+### Two pages disappear from the navbar after upgrade
 
-#### "Version still shows 1.0.x after upgrade"
+Almost always a stale `cache/production/`. Manually delete the folder content via FTP (the ACP "Purge cache" button is sometimes not enough), then reload the forum.
 
-**Cause**: Old cache or composer.json not updated
+### Restoration shows "0 group permissions, 0 roles, 0 user permissions restored"
 
-**Solution**:
-1. Delete `cache/production/*` again
-2. Disable and re-enable extension
-3. Verify `composer.json` shows version 1.1.0
-
-#### "Multi-select not showing on admin page"
-
-**Cause**: Old template file still cached
-
-**Solution**:
-1. Verify `styles/all/template/permmatrix_user_body.html` was replaced
-2. Clear browser cache (Ctrl+Shift+R)
-3. Purge phpBB cache
-4. Check file timestamp matches upload time
-
-#### "Hidden Groups section missing in ACP"
-
-**Cause**: ACP template not updated
-
-**Solution**:
-1. Verify `adm/style/permmatrix_acp_settings.html` was replaced
-2. Clear cache
-3. Try different browser (rule out browser cache)
-
-### Runtime Issues
-
-#### "Permission denied" when accessing pages
-
-**Solution**:
-1. Grant permission `u_permmatrix_view` to user's group
-2. Check ACP setting "Enable permission matrix" is `Yes`
-
-#### "Page not found" (404)
-
-**Solution**:
-1. Verify extension is enabled
-2. Clear cache
-3. Check `config/routing.yml` exists
-
-#### "No groups showing in selector"
-
-**Solution**:
-1. Check ACP → Hidden Groups settings
-2. Ensure at least one group is unchecked
-3. Verify database has groups: `SELECT * FROM phpbb_groups;`
-
-#### "Buttons don't work" / "Filtering broken"
-
-**Solution**:
-1. Enable JavaScript in browser
-2. Check browser console for errors (F12)
-3. Clear browser cache
-4. Try different browser
+The target extension's permissions don't exist in the database. Re-enable the extension first (a `Delete data` cycle wipes them), **then** import.
 
 ---
 
-## Support Resources
+## Support
 
-- **GitHub Issues**: [https://github.com/verturin/permmatrix/issues](https://github.com/verturin/permmatrix/issues)
-- **Documentation**: [README.md](README.md) · [CHANGELOG.md](CHANGELOG.md)
-- **phpBB.com**: [Extension page](https://www.phpbb.com/customise/db/extension/permmatrix/)
-
----
-
-**Need help?** Open an issue on GitHub with:
-- phpBB version
-- PHP version
-- Extension version
-- Error message (if any)
-- Steps to reproduce
+- **Issues**: [GitHub Issues](https://github.com/verturin/permmatrix/issues)  
+- Provide phpBB version, PHP version, extension version, exact error message, and steps to reproduce.

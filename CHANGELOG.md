@@ -1,9 +1,95 @@
 # Changelog
+## [1.2.5] - 2026-06-02
+
+### Fixed
+- **Import upload**: replaced direct `$_FILES` access (forbidden by phpBB's `deactivated_super_global`) with the official `$request->file('import_file')` method. The previous code triggered "Illegal use of $_FILES" on import.
+- Tolerant upload validation: detects phpBB's sentinel value `name => 'none'` returned when no file is uploaded, reads the temp file safely, and shows a clear error code if anything goes wrong.
+
+### Changed
+- ACP menu entry renamed from "Sauvegarde des permissions" to **"Sauvegarde / Restauration des permissions"** (and English equivalent) to reflect that the page handles both operations.
+
+### Verified
+- Full end-to-end cycle validated on live phpBB: export → delete extension data → re-enable extension → import → all permissions (including custom groups like TestPermatrix and role assignments for MODERATORS/REGISTERED) correctly restored.
+
+---
+
+## [1.2.4] - 2026-06-01
+
+### Fixed
+- **Import error "Illegal use of $_FILES"**: phpBB disables PHP superglobals via `deactivated_super_global` for security. The backup import was directly accessing `$_FILES`, triggering a fatal error on JSON upload. Replaced with the official `$request->file('import_file')` method.
+
+---
+
+## [1.2.3] - 2026-06-01
+
+### Verified
+- Backup module fully validated on a live phpBB installation: custom user-created groups (not just phpBB special groups) are correctly exported with their direct permissions on the chosen extension.
+- Confirmed format `2.1` of the JSON correctly captures groups via direct permissions, roles, role-to-group assignments, and role-to-user assignments.
+
+### Notes
+- No code change vs 1.2.2 — this release just removes the temporary debug logging used to diagnose a stale-cache issue during 1.2.2 testing.
+
+---
+
+## [1.2.2] - 2026-06-01
+
+### Fixed
+- **Complete role-based permissions in backup**: previously, only direct permissions (`auth_role_id = 0`) were exported. Groups and users assigned to roles (e.g. MODERATORS having ROLE_USER_STANDARD) were missing from the JSON. Now the export captures the role assignments themselves, so restoration reproduces the full permission state including all groups using roles.
+
+### Added
+- New fields in backup JSON v2.1: `group_roles` (which groups have which role on which forum) and `user_roles` (same for users).
+- Restoration now re-applies role assignments after restoring permissions and roles.
+
+---
+
+## [1.2.1] - 2026-05-31
+
+### Fixed
+- **Correct extension detection** for the backup module: permissions are now identified by reading each extension's `migrations/*.php` files and extracting `permission.add` declarations. The previous heuristic (non-core list) wrongly grouped permissions from multiple extensions together and missed some core permissions (like `f_softdelete`).
+- Backup JSON now contains **only** the permissions actually declared by the chosen extension.
+
+### Added
+- **Permission preview** in the export form: when an extension is selected, the exact list of detected permissions is displayed before export, so the user can verify what will be saved.
+- New error message `PERMMATRIX_BACKUP_NO_PERMS_DB` when an extension's permissions exist in migrations but not in the database (extension disabled or data deleted).
+
+### Changed
+- Backup file format bumped to version `2.0` (the schema is identical but the contents are now correctly filtered by extension).
+- Extension dropdown now lists only extensions that actually declare permissions in their migrations.
+
+---
+
 
 All notable changes to the **Forum Permission Matrix** extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.2.0] - 2026-05-28
+
+### Added
+- **Permission backup & restore module** (new ACP tab "Permission Backup")
+  - Export an extension's permissions (groups, roles, users) to a downloadable JSON file
+  - Import a JSON backup to restore permissions after a "Delete Data" + re-enable cycle
+  - Extension selector listing all enabled extensions with custom permission count
+- **Name-based remapping**: backups store names (permission, group, role, username) instead of numeric IDs, so restoration works even after auth_option_id values change
+- **Automatic permission cache clearing** after import (`_acl_options` + acl prefetch)
+
+### Changed
+- **Translation corrections** (deferred from earlier):
+  - `PERMMATRIX_NAV_LINK`: "Group Permissions" → "Forum Permissions" (EN), "Permissions des Groupes" → "Permissions du forum" (FR)
+  - `PERMMATRIX_USER_NAV_LINK`: aligned with page titles
+
+### Technical
+- New file `acp/backup_module.php` (export/import logic)
+- New file `adm/style/permmatrix_acp_backup.html` (ACP template)
+- New migration `add_backup_module.php` registers the ACP module
+- Backup mode requires `acl_a_authgroups` permission
+- Tables handled: `acl_options`, `acl_groups`, `acl_users`, `acl_roles`, `acl_roles_data`
+
+### Known Limitation
+- Permission-to-extension mapping is approximate: phpBB does not record which extension created which permission. Detection identifies non-core permissions. Accurate for single-extension setups.
+
+---
 
 ## [1.1.0] - 2026-04-22
 

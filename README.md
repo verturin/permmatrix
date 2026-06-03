@@ -1,10 +1,10 @@
 # Forum Permission Matrix
 
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/verturin/permmatrix/releases)
+[![Version](https://img.shields.io/badge/version-1.2.5-blue.svg)](https://github.com/verturin/permmatrix/releases)
 [![phpBB](https://img.shields.io/badge/phpBB-3.3.14+-orange.svg)](https://www.phpbb.com/)
 [![License](https://img.shields.io/badge/license-GPL--2.0-green.svg)](LICENSE)
 
-Interactive permission matrices for phpBB 3.3+ displaying forum and admin permissions in easy-to-read tables with multi-group comparison, native ACP categorization, and real-time filtering.
+Interactive permission matrices for phpBB 3.3+ with **permission backup and restore**, multi-group comparison, native ACP categorization, and real-time filtering.
 
 ## Features
 
@@ -17,86 +17,83 @@ Interactive permission matrices for phpBB 3.3+ displaying forum and admin permis
   
 - **Admin Permissions Page** (`/permmatrix-user`)
   - User (u_*), Moderator (m_*), and Admin (a_*) permissions
-  - Multi-group comparison with up to all groups simultaneously
+  - Multi-group comparison
   - Native phpBB ACP categorization (Profile, Posts, PM, Misc, Settings, etc.)
+
+### 💾 Permission Backup & Restore (new in 1.2.x)
+
+- Export the permissions of any installed extension as a JSON file
+- Restore permissions after `Delete data` + re-enable, without reconfiguring everything
+- Permissions are detected by reading each extension's `migrations/` files (exact, not heuristic)
+- Captures direct permissions, role definitions, role-to-group and role-to-user assignments
+- Custom groups created by the admin are fully supported
 
 ### 🎛️ Interactive Filtering
 
-- **Type Filter**: Show only User, Moderator, or Admin permissions
-- **Group Multi-Select**: Compare multiple groups side-by-side
-- **Quick Selection Buttons**: Select/deselect all groups instantly
-- **Real-Time Updates**: JavaScript-based filtering without page reload
+- Filter by permission type (User / Moderator / Admin)
+- Multi-select groups, with "Select all" / "Deselect all"
+- JavaScript-based, no page reload
 
 ### ⚙️ Administrative Control
 
-- **ACP Configuration Panel**: Enable/disable matrix access
-- **Hidden Groups Management**: 
-  - Separate control for forum page and admin page
-  - Hide irrelevant groups (Bots, COPPA users, etc.)
-  - Filtered lists appear in both ACP and frontend
+- ACP panel: enable/disable matrix access
+- Separate "Hidden Groups" configuration for the forum page and the admin page
+- New dedicated tab: **Permission Backup / Restore**
 
-### 🎨 Modern Interface
+### 🎨 Interface
 
-- **Navbar Integration**: 
-  - Icon-only display on desktop (fa-users for forums, fa-shield for admin)
-  - Full text labels in mobile burger menu
-  - Responsive hiding on small screens
-- **Color-Coded Cells**:
-  - ✔️ Green = Allowed (YES)
-  - ✖️ Red = Never (NEVER)
-  - – Yellow = Not set (NO)
-  - · Grey = Undefined
-- **Sticky Headers**: First column and top row stay visible while scrolling
+- Navbar integration (desktop icons, full text on mobile burger menu)
+- Color-coded cells (✔️ Allowed · ✖️ Never · – Not set · · Undefined)
+- Sticky headers (column + row) while scrolling
 
 ### 🌍 Multilingual
 
-- English (en)
-- French (fr)
-- Easy to translate to other languages
+- English (en) and French (fr)
+- Easy to extend to other languages
 
 ## Installation
 
-1. Download the latest release from [Releases](https://github.com/verturin/permmatrix/releases)
-2. Extract and upload `permmatrix/` folder to `ext/verturin/`
+1. Download the latest release: [permmatrix-v1.2.5.zip](https://github.com/verturin/permmatrix/releases/latest)
+2. Extract and upload the `permmatrix/` folder to `ext/verturin/`
 3. Enable in `ACP` → `Customise` → `Extensions`
-4. Configure in `ACP` → `Extensions` → `Permission Matrix Settings`
-5. Clear cache
+4. Grant the `u_permmatrix_view` permission to the desired groups
+5. Configure in `ACP` → `Extensions` → `Matrice des permissions`
 
-See [INSTALL.md](INSTALL.md) for detailed instructions.
+See [INSTALL.md](INSTALL.md) for detailed instructions and the upgrade procedure.
 
-## Usage
+## Quick Usage
 
-### Accessing Pages
+### Browsing permissions
+- **Desktop**: click the navbar icons (👥 forums / 🛡️ admin)
+- **Mobile**: open the burger menu
 
-**Desktop**: Click navbar icons (👥 for forums, 🛡️ for admin)  
-**Mobile**: Open burger menu  
-**Direct**: `/permmatrix` and `/permmatrix-user`
+### Backing up an extension's permissions
+1. ACP → Matrice des permissions → **Sauvegarde / Restauration des permissions**
+2. Pick an extension from the dropdown (the page previews exactly which permissions will be saved)
+3. Click **Download backup** → a `.json` file is generated
 
-### Permission Legend
+### Restoring permissions
+1. Re-enable the target extension first (its permissions must exist again)
+2. Same ACP page → Import section → pick the JSON file → **Restore permissions**
+
+### Permission legend
 
 | Symbol | Meaning |
-|--------|---------|
+|---|---|
 | ✔️ | Allowed (YES) |
-| ✖️ | Never (NEVER) |
-| – | Not set (NO) |
+| ✖️ | Never (NEVER — cannot be overridden) |
+| – | Not set (NO — can be overridden) |
 | · | Undefined |
-
-## Upgrading to 1.1.0
-
-From 1.0.x:
-
-1. Backup database and files
-2. Disable extension in ACP
-3. Replace 6 files (see [INSTALL.md](INSTALL.md#upgrading))
-4. Delete `cache/production/`
-5. Re-enable extension
-6. Purge cache
 
 ## Requirements
 
 - phpBB 3.3.14+
 - PHP 7.2+
-- JavaScript-enabled browser
+- JavaScript-enabled browser (for filtering)
+
+## Upgrading
+
+From any earlier 1.x release, see [INSTALL.md → Upgrading](INSTALL.md#upgrading). The migration is automatic on extension re-enable; existing settings are preserved.
 
 ## Support
 
@@ -105,7 +102,7 @@ From 1.0.x:
 
 ## License
 
-GPL-2.0-only - See [LICENSE](LICENSE)
+GPL-2.0-only — see [LICENSE](LICENSE).
 
 ---
 
