@@ -6,6 +6,15 @@
             "download": "https://github.com/verturin/permmatrix/releases/download/v1.2.5/permmatrix-v1.2.5.zip",
             "eol": null,
             "security": false
-        }
+        },
+        "1.1": {
+            "current": "1.1.0",
+            "announcement": "https://github.com/verturin/permmatrix/releases/tag/v1.1.0",
+            "download": "https://github.com/verturin/permmatrix/releases/download/v1.1.0/permmatrix-v1.1.0.zip",
+            "eol": "2026-06-01",
+            "security": false,
+            "upgrade_to": "1.2.5",
+            "message": "La branche 1.1 n'est plus maintenue depuis le 2026-06-01. Veuillez effectuer une mise à niveau vers la version 1.2.5."
+        }        
     }
 }
