@@ -7,6 +7,22 @@
 	<fieldset>
 		<legend>{{ lang('PERMMATRIX_SETTINGS') }}</legend>
 
+		<div class="permmatrix-mode-box">
+			<p class="permmatrix-mode-title">{{ lang('PERMMATRIX_ADMIN_ONLY') }}</p>
+			<p class="permmatrix-mode-desc">{{ lang('PERMMATRIX_ADMIN_ONLY_EXPLAIN') }}</p>
+
+			<label class="permmatrix-mode-choice pm-mode-public">
+				<input type="radio" name="permmatrix_admin_only" value="0"<!-- IF not PERMMATRIX_ADMIN_ONLY --> checked="checked"<!-- ENDIF -->>
+				<span class="permmatrix-mode-label">{{ lang('PERMMATRIX_MODE_PUBLIC') }}</span>
+			</label>
+
+			<label class="permmatrix-mode-choice pm-mode-admin">
+				<input type="radio" name="permmatrix_admin_only" value="1"<!-- IF PERMMATRIX_ADMIN_ONLY --> checked="checked"<!-- ENDIF -->>
+				<span class="permmatrix-mode-label">{{ lang('PERMMATRIX_MODE_ADMIN') }}</span>
+			</label>
+		</div>
+
+
 		<dl>
 			<dt>
 				<label>{{ lang('PERMMATRIX_ENABLED') }}</label>
@@ -22,6 +38,7 @@
 				<!-- ENDIF -->
 			</dd>
 		</dl>
+
 
 		<dl>
 			<dt>
@@ -66,3 +83,48 @@
 </form>
 
 <!-- INCLUDE overall_footer.html -->
+
+<style>
+.permmatrix-mode-box {
+	margin: 0 0 22px;
+	padding: 16px 18px;
+	background: #fff8f7;
+	border: 2px solid #c0392b;
+	border-left: 7px solid #c0392b;
+	border-radius: 5px;
+}
+.permmatrix-mode-title {
+	margin: 0 0 4px;
+	font-size: 1.25em;
+	font-weight: bold;
+	color: #c0392b;
+}
+.permmatrix-mode-desc {
+	margin: 0 0 14px;
+	font-size: 0.9em;
+	color: #555;
+}
+.permmatrix-mode-choice {
+	display: block;
+	margin: 0 0 8px;
+	padding: 11px 14px;
+	background: #fff;
+	border: 2px solid #ccc;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 1em;
+}
+.permmatrix-mode-choice:hover { border-color: #999; }
+.permmatrix-mode-choice input { margin-right: 10px; vertical-align: middle; }
+.permmatrix-mode-label { vertical-align: middle; font-weight: 600; }
+.pm-mode-public:has(input:checked) {
+	border-color: #2d8a4e;
+	background: #e6f4ea;
+	box-shadow: 0 0 0 2px rgba(45,138,78,.18);
+}
+.pm-mode-admin:has(input:checked) {
+	border-color: #c0392b;
+	background: #fbe9e7;
+	box-shadow: 0 0 0 2px rgba(192,57,43,.18);
+}
+</style>

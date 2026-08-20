@@ -24,11 +24,11 @@ $lang = array_merge($lang, [
 	'PERMMATRIX_ENABLED'               => 'Activer la matrice des permissions',
 	'PERMMATRIX_ENABLED_EXPLAIN'       => 'Lorsqu\'activée, les utilisateurs connectés peuvent accéder à la matrice des permissions via la barre de navigation.',
 
-	'PERMMATRIX_EXCLUDED_GROUPS'       => 'Groupes masqués (page permissions forum)',
-	'PERMMATRIX_EXCLUDED_GROUPS_EXPLAIN' => 'Cochez les groupes que vous souhaitez masquer de la matrice des permissions forum. Tous les groupes non cochés seront visibles.',
+	'PERMMATRIX_EXCLUDED_GROUPS'       => 'Groupes masqués sur /permmatrix',
+	'PERMMATRIX_EXCLUDED_GROUPS_EXPLAIN' => 'Page « Permissions du forum » — matrice des permissions de forum (f_) par groupe. Cochez les groupes à retirer du sélecteur de cette page. Tous les groupes non cochés y resteront visibles.',
 	
-	'PERMMATRIX_EXCLUDED_GROUPS_USER'       => 'Groupes masqués (page permissions admin)',
-	'PERMMATRIX_EXCLUDED_GROUPS_USER_EXPLAIN' => 'Cochez les groupes que vous souhaitez masquer de la page permissions admin (u_, m_, a_). Tous les groupes non cochés seront visibles.',
+	'PERMMATRIX_EXCLUDED_GROUPS_USER'       => 'Groupes masqués sur /permmatrix-user',
+	'PERMMATRIX_EXCLUDED_GROUPS_USER_EXPLAIN' => 'Page « Permissions utilisateurs, modérateurs et administrateurs » — permissions globales (u_, m_, a_), non liées à un forum. Cochez les groupes à retirer de la liste de cette page. Tous les groupes non cochés y resteront visibles.',
 
 	// ─── Sauvegarde / Restauration ───
 	'PERMMATRIX_BACKUP'                 => 'Sauvegarde / Restauration des permissions',
@@ -56,4 +56,10 @@ $lang = array_merge($lang, [
 	'PERMMATRIX_BACKUP_UPLOAD_ERROR'    => 'Erreur lors du téléversement du fichier.',
 	'PERMMATRIX_BACKUP_INVALID_FILE'    => 'Fichier invalide ou format non reconnu.',
 	'PERMMATRIX_BACKUP_IMPORT_OK'       => 'Restauration réussie : %1$d permission(s) de groupes, %2$d rôle(s), %3$d permission(s) utilisateur restaurées.',
+
+	// ─── Mode de la page ───
+	'PERMMATRIX_ADMIN_ONLY'         => 'Mode de fonctionnement',
+	'PERMMATRIX_ADMIN_ONLY_EXPLAIN' => 'Détermine qui peut consulter la page des permissions admin et si les permissions sont modifiables en cliquant sur les cases des deux matrices. En mode public, aucune modification n\'est possible, même pour un administrateur.',
+	'PERMMATRIX_MODE_PUBLIC'        => 'Publique — consultation seule. Aucune modification possible, même par un administrateur.',
+	'PERMMATRIX_MODE_ADMIN'         => 'Administrateurs uniquement — page admin réservée aux administrateurs, modification des permissions activée en cliquant sur les cases.',
 ]);

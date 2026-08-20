@@ -1,4 +1,141 @@
 # Changelog
+## [1.3.9] - 2026-08-17
+
+### Added
+- **Every change now asks for confirmation.** Choosing a value opens a dialog recapping the group, the forum (on the forum matrix), the permission, the current value and the new one, before anything is written. Since the write is immediate and there is no undo, seeing what is about to change was the missing safety step — this was reported on the global permissions page, where changes were applied the instant a value was picked.
+- Cells fed by a permission role go straight to the role dialog as before, which carries its own recap — there is no double confirmation.
+- The recap shows the **current value** alongside the new one, so a no-op click is visible before it is committed.
+
+### Verified
+Full audit of the extension, now automated and re-runnable:
+- syntax of all 20 PHP files, both YAML configs and both JSON files
+- JavaScript syntax, plus every called function being defined and every `getElementById` target existing in the markup
+- all language keys used anywhere are defined, in both languages
+- FR/EN parity: 113 keys on each side, no drift
+- services resolve to existing classes, routes resolve to declared services
+- every ACP module has its companion `_info.php` and its template
+- migration dependencies resolve
+- no forbidden superglobals, no `$version` property in `ext.php`
+- version consistent across `composer.json`, `permmatrix_version.json` and the README badge
+
+---
+
+## [1.3.8] - 2026-08-17
+
+### Fixed
+- **Choosing a value did nothing.** The context menu opened, but clicking one of the four options silently aborted with `ReferenceError: buildContext is not defined`. The 1.3.6 patch that introduced the group/forum recap added two calls to a `buildContext()` helper while the edit that was supposed to insert the helper itself matched nothing and failed silently — the search text still assumed the older three-argument signature of `send()`. Both matrices were affected.
+
+### Added
+- Build-time verification that every function called in the templates' JavaScript is actually defined, and that every element id read via `getElementById` exists in the markup. A syntax check alone could not catch this class of bug, since a call to an undefined function is perfectly valid syntax.
+
+---
+
+## [1.3.7] - 2026-08-17
+
+### Changed
+- **The editing-mode banner is now unmistakable**: a solid red header bar with a warning sign, uppercase title, and a blinking indicator dot, above a body explaining that every click writes a real permission change with no undo.
+- The banner pulses slowly rather than flashing. A hard blink is a known accessibility hazard for photosensitive users and makes the table underneath harder to read; a slow pulse draws the same attention without either drawback. Only the small indicator dot blinks.
+- Both animations are disabled automatically when the operating system requests reduced motion (`prefers-reduced-motion`), falling back to a static red glow.
+
+---
+
+## [1.3.6] - 2026-08-17
+
+### Changed
+- **The role dialog now names the group being modified**, which was the missing piece: the recap listed the permission, the value and the role, but not who the change applied to — precisely the fact that determines the scope of the decision.
+- On the forum matrix the recap also names the **forum** concerned, since a row there is a forum rather than a permission. The line is hidden on the global permissions matrix where it would be redundant.
+- Recap order is now Group, Forum, Permission, New value, Role — from the broadest context down to the mechanism.
+
+---
+
+## [1.3.5] - 2026-08-17
+
+### Changed
+- **The role dialog now recaps what is about to be applied.** A summary block shows the permission code, the new value in plain words, and the role affected — so the decision is made with the full context visible, not just the role name in the heading.
+- **The "update the role" button now names the role** instead of referring to it generically, making the two options distinguishable at a glance.
+
+### Fixed
+- **ACP hidden-group settings did not say which page they applied to.** The two sections were labelled "page permissions forum" and "page permissions admin", which did not map obviously to the two URLs. They are now titled "Groupes masqués sur /permmatrix" and "Groupes masqués sur /permmatrix-user", with descriptions naming the page and the permission types it covers.
+
+---
+
+## [1.3.4] - 2026-08-17
+
+### Fixed
+- **Brown lines across the matrix.** Role-derived cells were marked with an inset bottom box-shadow. On rows where every cell comes from a role, those underlines joined end to end and rendered as a continuous brown bar that looked like a table border rather than an indicator. Replaced with a small orange corner triangle on each cell, which stays readable however many adjacent cells are marked.
+
+---
+
+## [1.3.3] - 2026-08-17
+
+### Added
+- **Choice between updating the role and breaking it.** Clicking a cell whose value comes from a permission role now opens a dialog offering two clearly-scoped options instead of a single destructive path:
+  - **Update the role** — the change applies to every assignment of that role, which is reported in the dialog (groups and users combined). The role stays in place and keeps driving those groups. Reversible by editing the role again.
+  - **Convert to individual permissions** — only the clicked group is affected; its current rights are copied one by one, then the change is applied. Not reversible without manual reassignment.
+- The dialog names the role and states the consequence of each option before anything is written.
+
+### Changed
+- Role-derived cells no longer imply conversion is the only option; the banner hint now describes both paths.
+- The page reloads after either action, since both change more than the clicked cell.
+
+---
+
+## [1.3.2] - 2026-08-17
+
+### Fixed
+- **Role-driven groups can now be edited.** Version 1.3.1 refused any edit on a group using a permission role, which in practice blocked entire groups (Robots, Registered, …) since roles are the normal way phpBB assigns forum permissions. Editing is now possible, mirroring what the native ACP does.
+
+### Added
+- **Role conversion with explicit confirmation.** Clicking a cell on a role-driven group returns a confirmation prompt naming the role. On confirmation, the role assignment is converted into individual permissions — the group keeps exactly the same rights but stops following the role — and the requested change is then applied. The conversion runs inside a database transaction.
+- Cells belonging to a role-driven group are marked with an orange underline, and the banner explains what clicking them will do.
+- The page reloads after a conversion, since every cell on that row changes at once.
+
+### Changed
+- The "this group uses a role" message is no longer a dead end; it is now the confirmation text explaining the consequence before anything is written.
+
+---
+
+## [1.3.1] - 2026-08-17
+
+### Fixed
+- **Editing did nothing (critical)**: French language strings containing apostrophes (`l'ACP`, `l'enregistrement`) were injected directly into JavaScript string literals, producing a syntax error that killed the entire script block — so no event listener was ever registered and the browser's native menu appeared instead. All labels now travel through `data-*` attributes and are read with `getAttribute()`, which is immune to quoting issues.
+
+### Changed
+- **Left click opens the menu** instead of right click, as it is more discoverable and does not fight the browser's own context menu. Right click still works as a secondary trigger.
+- **Editing is now available on the forum permissions page** (`/permmatrix`) as well, not only on the admin page. Each cell carries its own `forum_id`.
+- **Edit banner restyled in red** instead of blue, with a bold "Mode modification actif" prefix, so an active editing session is unmistakable.
+- **ACP: the operating mode is now the first setting**, presented in a highlighted box with two large radio cards (green when Public, red when Administrators only) instead of a plain inline radio pair.
+- Setting renamed to "Mode de fonctionnement" / "Operating mode" since it now governs editing on both matrices, not just the admin page.
+
+### Note
+- On the forum page, forums whose permissions come from a role are detected and marked non-editable, consistent with the admin page.
+
+---
+
+## [1.3.0] - 2026-08-15
+
+### Added
+- **Right-click permission editing** on the admin permissions page. Administrators can right-click any cell to open a context menu (Allowed / No / Never / Not set) and apply the change instantly via AJAX, without leaving the page.
+- **New ACP setting: "Mode de la page permissions admin"** with two mutually exclusive modes:
+  - **Public** — the page is viewable per the usual permission check, and **no editing is possible at all**, not even for administrators.
+  - **Administrators only** — the page is restricted to users holding `a_authgroups`, and right-click editing is enabled.
+- Visual feedback: cell outline on hover, saving state, success flash, and toast notifications for success/errors.
+
+### Security
+- Every edit request is validated **server-side** in a dedicated `edit_controller`: login check, `a_authgroups` permission, CSRF link hash, page-mode check, permission existence, group existence. Hiding the menu client-side is never treated as protection.
+- The page-mode rule is enforced twice — once when rendering (no menu is emitted in public mode) and once on the AJAX endpoint (a forged request in public mode is rejected with `PERMMATRIX_EDIT_PUBLIC_MODE`).
+- Cells belonging to a group driven by a permission role are **not editable**. Changing one cell would require breaking the whole role (converting all its permissions to direct ones), which is too destructive for a single click. A message explains this and points to the ACP.
+- ACL values written use the correct phpBB constants: `ACL_YES = 1`, `ACL_NEVER = 0`, `ACL_NO = -1`. Choosing "Not set" deletes the row rather than writing a value.
+- The permission cache is purged after every change (`_acl_options` + acl prefetch).
+
+### Technical
+- New file `controller/edit_controller.php` (AJAX endpoint, returns `JsonResponse`)
+- New route `verturin_permmatrix_edit` (`/permmatrix/edit`, POST only)
+- New migration `add_edit_mode.php` adding config `verturin_permmatrix_admin_only` (default `0` = public, the safe/historical behaviour)
+- Context menu, CSS and JavaScript added to `permmatrix_user_body.html`, emitted only when editing is allowed
+
+---
+
 ## [1.2.5] - 2026-06-02
 
 ### Fixed

@@ -40,3 +40,13 @@ services:
             - '@user'
             - '%core.root_path%'
             - '%core.php_ext%'
+
+    verturin.permmatrix.edit_controller:
+        class: verturin\permmatrix\controller\edit_controller
+        arguments:
+            - '@auth'
+            - '@cache'
+            - '@config'
+            - '@dbal.conn'
+            - '@request'
+            - '@user'

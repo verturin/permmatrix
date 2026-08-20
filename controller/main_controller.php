@@ -189,8 +189,16 @@ class main_controller
 		}
 		$this->db->sql_freeresult($result);
 
+		// ── Mode d'édition ────────────────────────────────────────────────────
+		// L'édition n'est possible que si la page admin est en mode
+		// « administrateurs uniquement ». La règle est réappliquée côté
+		// serveur dans edit_controller.
+		$admin_only = !empty($this->config['verturin_permmatrix_admin_only']);
+		$can_edit   = ($admin_only && $this->auth->acl_get('a_authgroups'));
+
 		// ── Load forum permissions for selected group ─────────────────────────
-		$forum_perms = []; // forum_id => [opt_name => setting]
+		$forum_perms    = []; // forum_id => [opt_name => setting]
+		$forum_has_role = []; // forum_id => true si piloté par un rôle
 
 		$sql = 'SELECT forum_id, auth_option_id, auth_role_id, auth_setting
 				FROM ' . ACL_GROUPS_TABLE . '
@@ -203,6 +211,10 @@ class main_controller
 
 			if ((int) $row['auth_option_id'] === 0 && (int) $row['auth_role_id'] > 0)
 			{
+				// Ce forum est piloté par un rôle : ses cases ne seront pas
+				// éditables (modifier une case casserait le rôle entier).
+				$forum_has_role[$fid] = true;
+
 				// Resolve via role
 				$role_perms = $roles_data[(int) $row['auth_role_id']] ?? [];
 				foreach ($role_perms as $opt => $val)
@@ -304,16 +316,25 @@ class main_controller
 				elseif ($val === 0)      { $status = 'never'; $icon = '✖'; }
 				else                     { $status = 'no';    $icon = '–'; }
 
+				$has_role = isset($forum_has_role[$fid]);
+
 				$this->template->assign_block_vars('forums.perm_cells', [
-					'OPT'    => $opt,
-					'STATUS' => $status,
-					'ICON'   => $icon,
+					'OPT'      => $opt,
+					'STATUS'   => $status,
+					'ICON'     => $icon,
+					'FID'      => $fid,
+					'EDITABLE' => $can_edit,
+					'HAS_ROLE' => $has_role,
 				]);
 			}
 		}
 
 		// ── Page header variables ──────────────────────────────────────────────
 		$this->template->assign_vars([
+			'S_PERMMATRIX_CAN_EDIT'    => $can_edit,
+			'U_PERMMATRIX_EDIT'        => $this->helper->route('verturin_permmatrix_edit'),
+			'PERMMATRIX_EDIT_HASH'     => generate_link_hash('permmatrix_edit'),
+			'PERMMATRIX_EDIT_GROUP_ID' => $selected_gid,
 			'PERMMATRIX_GROUP_NAME' => $selected_group_name,
 			'PERMMATRIX_GROUP_ID'   => $selected_gid,
 			'U_PERMMATRIX_BASE'     => $this->helper->route('verturin_permmatrix'),

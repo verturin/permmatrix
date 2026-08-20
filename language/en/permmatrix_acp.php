@@ -24,11 +24,11 @@ $lang = array_merge($lang, [
 	'PERMMATRIX_ENABLED'               => 'Enable permission matrix',
 	'PERMMATRIX_ENABLED_EXPLAIN'       => 'When enabled, logged-in users can access the permission matrix page via the navigation bar.',
 
-	'PERMMATRIX_EXCLUDED_GROUPS'       => 'Hidden groups (forum permissions page)',
-	'PERMMATRIX_EXCLUDED_GROUPS_EXPLAIN' => 'Check the groups you want to hide from the permission matrix. All unchecked groups will be visible.',
+	'PERMMATRIX_EXCLUDED_GROUPS'       => 'Groups hidden on /permmatrix',
+	'PERMMATRIX_EXCLUDED_GROUPS_EXPLAIN' => 'The "Forum permissions" page — matrix of forum permissions (f_) by group. Check the groups to remove from that page\'s selector. All unchecked groups stay visible there.',
 	
-	'PERMMATRIX_EXCLUDED_GROUPS_USER'       => 'Hidden groups (admin permissions page)',
-	'PERMMATRIX_EXCLUDED_GROUPS_USER_EXPLAIN' => 'Check the groups you want to hide from the admin permissions page (u_, m_, a_). All unchecked groups will be visible.',
+	'PERMMATRIX_EXCLUDED_GROUPS_USER'       => 'Groups hidden on /permmatrix-user',
+	'PERMMATRIX_EXCLUDED_GROUPS_USER_EXPLAIN' => 'The "User, moderator and admin permissions" page — global permissions (u_, m_, a_) not tied to a forum. Check the groups to remove from that page\'s list. All unchecked groups stay visible there.',
 
 	// ─── Backup / Restore ───
 	'PERMMATRIX_BACKUP'                 => 'Permission Backup / Restore',
@@ -56,4 +56,10 @@ $lang = array_merge($lang, [
 	'PERMMATRIX_BACKUP_UPLOAD_ERROR'    => 'Error uploading the file.',
 	'PERMMATRIX_BACKUP_INVALID_FILE'    => 'Invalid file or unrecognized format.',
 	'PERMMATRIX_BACKUP_IMPORT_OK'       => 'Restore successful: %1$d group permission(s), %2$d role(s), %3$d user permission(s) restored.',
+
+	// ─── Page mode ───
+	'PERMMATRIX_ADMIN_ONLY'         => 'Operating mode',
+	'PERMMATRIX_ADMIN_ONLY_EXPLAIN' => 'Controls who can view the /permmatrix-user page and whether permissions can be edited there. In public mode no editing is possible, not even for an administrator.',
+	'PERMMATRIX_MODE_PUBLIC'        => 'Public — read only. No editing possible, not even for an administrator.',
+	'PERMMATRIX_MODE_ADMIN'         => 'Administrators only — admin page restricted to administrators, click-to-edit enabled on both matrices.'
 ]);

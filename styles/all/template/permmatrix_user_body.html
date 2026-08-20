@@ -43,6 +43,19 @@
 			</div>
 		</div>
 
+		<!-- IF S_PERMMATRIX_CAN_EDIT -->
+		<div class="permmatrix-edit-notice" role="status">
+			<div class="pm-notice-head">
+				<span class="pm-notice-dot"></span>
+				<span class="pm-notice-title">{{ lang('PERMMATRIX_EDIT_MODE_ON') }}</span>
+			</div>
+			<div class="pm-notice-body">
+				{{ lang('PERMMATRIX_EDIT_NOTICE') }}
+				<br><span class="pm-notice-hint">{{ lang('PERMMATRIX_EDIT_ROLE_HINT') }}</span>
+			</div>
+		</div>
+		<!-- ENDIF -->
+
 		<!-- Permission table -->
 		<div class="permmatrix-wrap">
 			<table class="permmatrix-table" cellspacing="0" cellpadding="0">
@@ -74,7 +87,7 @@
 							<span class="permmatrix-opt-label">{{ rows.LABEL }}</span>
 						</td>
 						<!-- BEGIN cells -->
-						<td class="permmatrix-perm-cell permmatrix-{{ rows.cells.STATUS }}" data-group-id="{{ rows.cells.GID }}">{{ rows.cells.ICON }}</td>
+						<td class="permmatrix-perm-cell permmatrix-{{ rows.cells.STATUS }}<!-- IF rows.cells.EDITABLE --> permmatrix-editable<!-- ENDIF --><!-- IF rows.cells.HAS_ROLE --> permmatrix-hasrole<!-- ENDIF -->" data-group-id="{{ rows.cells.GID }}" data-option="{{ rows.cells.OPT }}"<!-- IF rows.cells.EDITABLE --> data-editable="1"<!-- ENDIF --><!-- IF rows.cells.HAS_ROLE --> data-hasrole="1"<!-- ENDIF -->>{{ rows.cells.ICON }}</td>
 						<!-- END cells -->
 					</tr>
 					<!-- ENDIF -->
@@ -292,6 +305,202 @@
 .permmatrix-never { background-color: #fce8e6; color: #c0392b; font-weight: bold; }
 .permmatrix-no    { background-color: #fff9e6; color: #b7860b; font-weight: bold; }
 .permmatrix-undef { background-color: #fff;    color: #ccc; }
+
+/* ── Édition par clic droit (administrateurs) ─────────────────────────── */
+.permmatrix-editable {
+	cursor: pointer;
+	position: relative;
+}
+.permmatrix-editable:hover {
+	outline: 2px solid #2E75B6;
+	outline-offset: -2px;
+}
+.permmatrix-hasrole { cursor: pointer; position: relative; }
+.permmatrix-hasrole::after {
+	content: '';
+	position: absolute;
+	top: 0; right: 0;
+	border-width: 0 5px 5px 0;
+	border-style: solid;
+	border-color: transparent #d9a441 transparent transparent;
+	opacity: .75;
+	pointer-events: none;
+}
+.permmatrix-hasrole:hover::after { opacity: 1; }
+.permmatrix-cell-saving {
+	opacity: 0.4;
+}
+.permmatrix-cell-saved {
+	animation: permmatrixFlash 0.8s ease-out;
+}
+@keyframes permmatrixFlash {
+	0%   { box-shadow: inset 0 0 0 3px #2d8a4e; }
+	100% { box-shadow: inset 0 0 0 3px transparent; }
+}
+
+.permmatrix-ctxmenu {
+	position: absolute;
+	z-index: 9999;
+	min-width: 190px;
+	background: #fff;
+	border: 1px solid #999;
+	border-radius: 4px;
+	box-shadow: 0 4px 14px rgba(0,0,0,.25);
+	padding: 4px 0;
+	font-size: 13px;
+	display: none;
+}
+.permmatrix-ctxmenu.is-open { display: block; }
+.permmatrix-ctxmenu-head {
+	padding: 6px 12px;
+	border-bottom: 1px solid #eee;
+	font-size: 11px;
+	color: #666;
+	font-family: "Courier New", monospace;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 260px;
+}
+.permmatrix-ctxmenu-item {
+	display: block;
+	width: 100%;
+	text-align: left;
+	padding: 7px 12px;
+	border: 0;
+	background: none;
+	cursor: pointer;
+	font-size: 13px;
+	color: #222;
+}
+.permmatrix-ctxmenu-item:hover { background: #eaf1fa; }
+.permmatrix-ctxmenu-item .pm-sym {
+	display: inline-block;
+	width: 18px;
+	font-weight: bold;
+}
+.pm-opt-yes   .pm-sym { color: #2d8a4e; }
+.pm-opt-never .pm-sym { color: #c0392b; }
+.pm-opt-no    .pm-sym { color: #b7860b; }
+.pm-opt-undef .pm-sym { color: #999; }
+
+.permmatrix-edit-notice {
+	margin: 12px 0;
+	border: 3px solid #c0392b;
+	border-radius: 5px;
+	overflow: hidden;
+	animation: permmatrixPulse 1.6s ease-in-out infinite;
+}
+.pm-notice-head {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 9px 16px;
+	background: #c0392b;
+}
+.pm-notice-dot {
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background: #fff;
+	flex-shrink: 0;
+	animation: permmatrixBlinkDot 1.1s steps(1, end) infinite;
+}
+.pm-notice-title {
+	color: #fff;
+	font-weight: bold;
+	font-size: 1.08em;
+	letter-spacing: .4px;
+	text-transform: uppercase;
+}
+.pm-notice-body {
+	padding: 11px 16px;
+	background: #fdf2f0;
+	color: #7b1f14;
+	font-size: 13px;
+	line-height: 1.5;
+}
+.pm-notice-hint { font-size: .92em; opacity: .85; }
+
+/* Pulsation lente plutôt qu'un clignotement franc : aussi visible, sans
+   les effets indésirables d'un flash rapide sur la lisibilité et sur les
+   personnes photosensibles. */
+@keyframes permmatrixPulse {
+	0%, 100% { box-shadow: 0 0 0 0 rgba(192,57,43,.55); }
+	50%      { box-shadow: 0 0 0 7px rgba(192,57,43,0); }
+}
+@keyframes permmatrixBlinkDot {
+	0%, 49%   { opacity: 1; }
+	50%, 100% { opacity: .15; }
+}
+
+/* Respect du réglage système « réduire les animations » */
+@media (prefers-reduced-motion: reduce) {
+	.permmatrix-edit-notice,
+	.pm-notice-dot { animation: none; }
+	.permmatrix-edit-notice { box-shadow: 0 0 0 4px rgba(192,57,43,.35); }
+}
+.permmatrix-toast {
+	position: fixed;
+	bottom: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	background: #333;
+	color: #fff;
+	padding: 10px 18px;
+	border-radius: 4px;
+	font-size: 13px;
+	z-index: 10000;
+	display: none;
+	max-width: 90%;
+}
+.permmatrix-toast.is-error { background: #c0392b; }
+
+.permmatrix-modal {
+	position: fixed; inset: 0; z-index: 10001;
+	background: rgba(0,0,0,.5); display: none;
+	align-items: center; justify-content: center; padding: 20px;
+}
+.permmatrix-modal.is-open { display: flex; }
+.permmatrix-modal-box {
+	background: #fff; border-radius: 6px; padding: 22px 24px;
+	max-width: 560px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,.35);
+}
+.permmatrix-modal-title { margin: 0 0 8px; font-size: 1.15em; font-weight: bold; color: #c0392b; }
+.permmatrix-modal-intro { margin: 0 0 18px; font-size: .92em; color: #444; line-height: 1.45; }
+.permmatrix-modal-choice {
+	display: block; width: 100%; text-align: left; margin: 0 0 10px;
+	padding: 13px 15px; border: 2px solid #ccc; border-radius: 5px;
+	background: #fff; cursor: pointer;
+}
+.permmatrix-modal-choice:hover { border-color: #2E75B6; background: #f5f9fd; }
+.pm-choice-label { display: block; font-weight: bold; font-size: .98em; color: #1F3864; margin-bottom: 3px; }
+.pm-choice-desc  { display: block; font-size: .85em; color: #666; line-height: 1.4; }
+.pm-choice-break:hover { border-color: #c0392b; background: #fdf5f4; }
+.pm-choice-break .pm-choice-label { color: #c0392b; }
+.permmatrix-modal-cancel {
+	display: block; width: 100%; margin-top: 6px; padding: 9px;
+	border: 1px solid #ccc; border-radius: 4px; background: #f4f4f4;
+	cursor: pointer; font-size: .9em; color: #444;
+}
+.permmatrix-modal-cancel:hover { background: #e8e8e8; }
+
+.permmatrix-modal-recap {
+	margin: 0 0 16px; padding: 11px 13px;
+	background: #f4f7fb; border: 1px solid #cfdcea; border-radius: 4px;
+	font-size: .88em; line-height: 1.7;
+}
+.permmatrix-modal-recap > div { display: flex; gap: 8px; }
+.pm-recap-k { color: #666; min-width: 145px; flex-shrink: 0; }
+.pm-recap-v { font-weight: bold; color: #1F3864; }
+
+.permmatrix-modal-apply {
+	display: block; width: 100%; margin: 0 0 8px; padding: 12px;
+	border: 2px solid #c0392b; border-radius: 5px;
+	background: #c0392b; color: #fff; font-weight: bold; font-size: 1em;
+	cursor: pointer;
+}
+.permmatrix-modal-apply:hover { background: #a93226; border-color: #a93226; }
 </style>
 
 <script>
@@ -372,5 +581,362 @@
 	}
 })();
 </script>
+
+<!-- IF S_PERMMATRIX_CAN_EDIT -->
+<div id="permmatrix-ctxmenu" class="permmatrix-ctxmenu"
+     data-url="{{ U_PERMMATRIX_EDIT }}"
+     data-hash="{{ PERMMATRIX_EDIT_HASH }}"
+     data-forum-id="{{ PERMMATRIX_EDIT_FORUM_ID }}"
+     data-msg-role="{{ lang('PERMMATRIX_EDIT_HAS_ROLE') }}"
+     data-msg-fail="{{ lang('PERMMATRIX_EDIT_FAILED') }}"
+     data-msg-ok="{{ lang('PERMMATRIX_EDIT_SAVED') }}">
+	<div class="permmatrix-ctxmenu-head" id="permmatrix-ctxmenu-head"></div>
+	<button type="button" class="permmatrix-ctxmenu-item pm-opt-yes"   data-set="yes"><span class="pm-sym">&#10004;</span> {{ lang('PERMMATRIX_LEGEND_YES') }}</button>
+	<button type="button" class="permmatrix-ctxmenu-item pm-opt-no"    data-set="no"><span class="pm-sym">&ndash;</span> {{ lang('PERMMATRIX_LEGEND_NO') }}</button>
+	<button type="button" class="permmatrix-ctxmenu-item pm-opt-never" data-set="never"><span class="pm-sym">&#10008;</span> {{ lang('PERMMATRIX_LEGEND_NEVER') }}</button>
+	<button type="button" class="permmatrix-ctxmenu-item pm-opt-undef" data-set="undef"><span class="pm-sym">&middot;</span> {{ lang('PERMMATRIX_LEGEND_UNDEF') }}</button>
+</div>
+<div id="permmatrix-confirmdlg" class="permmatrix-modal"
+     data-title="{{ lang('PERMMATRIX_CONFIRM_TITLE') }}"
+     data-intro="{{ lang('PERMMATRIX_CONFIRM_INTRO') }}">
+	<div class="permmatrix-modal-box">
+		<p class="permmatrix-modal-title" id="pm-cfm-title"></p>
+		<p class="permmatrix-modal-intro" id="pm-cfm-intro"></p>
+
+		<div class="permmatrix-modal-recap">
+			<div><span class="pm-recap-k">{{ lang('PERMMATRIX_ROLE_DLG_R_GROUP') }}</span> <span class="pm-recap-v" id="pm-cfm-group"></span></div>
+			<div id="pm-cfm-item-row"><span class="pm-recap-k">{{ lang('PERMMATRIX_ROLE_DLG_R_ITEM') }}</span> <span class="pm-recap-v" id="pm-cfm-item"></span></div>
+			<div><span class="pm-recap-k">{{ lang('PERMMATRIX_ROLE_DLG_R_PERM') }}</span> <span class="pm-recap-v" id="pm-cfm-perm"></span></div>
+			<div><span class="pm-recap-k">{{ lang('PERMMATRIX_ROLE_DLG_R_CURRENT') }}</span> <span class="pm-recap-v" id="pm-cfm-current"></span></div>
+			<div><span class="pm-recap-k">{{ lang('PERMMATRIX_ROLE_DLG_R_VALUE') }}</span> <span class="pm-recap-v" id="pm-cfm-value"></span></div>
+		</div>
+
+		<button type="button" class="permmatrix-modal-apply" data-action="ok">{{ lang('PERMMATRIX_CONFIRM_APPLY') }}</button>
+		<button type="button" class="permmatrix-modal-cancel" data-action="cancel">{{ lang('PERMMATRIX_ROLE_DLG_CANCEL') }}</button>
+	</div>
+</div>
+
+<div id="permmatrix-roledlg" class="permmatrix-modal"
+     data-title="{{ lang('PERMMATRIX_ROLE_DLG_TITLE') }}"
+     data-intro="{{ lang('PERMMATRIX_ROLE_DLG_INTRO') }}"
+     data-update-desc="{{ lang('PERMMATRIX_ROLE_DLG_UPDATE_DESC') }}"
+     data-break-desc="{{ lang('PERMMATRIX_ROLE_DLG_BREAK_DESC') }}"
+     data-update-label="{{ lang('PERMMATRIX_ROLE_DLG_UPDATE') }}"
+     data-page-mode="user">
+	<div class="permmatrix-modal-box">
+		<p class="permmatrix-modal-title" id="permmatrix-roledlg-title"></p>
+		<p class="permmatrix-modal-intro" id="permmatrix-roledlg-intro"></p>
+
+		<div class="permmatrix-modal-recap" id="permmatrix-roledlg-recap">
+			<div><span class="pm-recap-k">{{ lang('PERMMATRIX_ROLE_DLG_R_GROUP') }}</span> <span class="pm-recap-v" id="pm-recap-group"></span></div>
+			<div id="pm-recap-item-row"><span class="pm-recap-k">{{ lang('PERMMATRIX_ROLE_DLG_R_ITEM') }}</span> <span class="pm-recap-v" id="pm-recap-item"></span></div>
+			<div><span class="pm-recap-k">{{ lang('PERMMATRIX_ROLE_DLG_R_PERM') }}</span> <span class="pm-recap-v" id="pm-recap-perm"></span></div>
+			<div><span class="pm-recap-k">{{ lang('PERMMATRIX_ROLE_DLG_R_VALUE') }}</span> <span class="pm-recap-v" id="pm-recap-value"></span></div>
+			<div><span class="pm-recap-k">{{ lang('PERMMATRIX_ROLE_DLG_R_ROLE') }}</span> <span class="pm-recap-v" id="pm-recap-role"></span></div>
+		</div>
+
+		<button type="button" class="permmatrix-modal-choice pm-choice-update" data-action="update">
+			<span class="pm-choice-label" id="pm-choice-update-label"></span>
+			<span class="pm-choice-desc" id="permmatrix-roledlg-updatedesc"></span>
+		</button>
+
+		<button type="button" class="permmatrix-modal-choice pm-choice-break" data-action="break">
+			<span class="pm-choice-label">{{ lang('PERMMATRIX_ROLE_DLG_BREAK') }}</span>
+			<span class="pm-choice-desc" id="permmatrix-roledlg-breakdesc"></span>
+		</button>
+
+		<button type="button" class="permmatrix-modal-cancel" data-action="cancel">{{ lang('PERMMATRIX_ROLE_DLG_CANCEL') }}</button>
+	</div>
+</div>
+<div id="permmatrix-toast" class="permmatrix-toast"></div>
+
+<script>
+(function() {
+	var menu = document.getElementById('permmatrix-ctxmenu');
+	if (!menu) { return; }
+
+	// Les libellés transitent par des attributs data-* : les injecter dans du
+	// JavaScript casserait le script dès qu'un texte contient une apostrophe.
+	var EDIT_URL  = menu.getAttribute('data-url');
+	var EDIT_HASH = menu.getAttribute('data-hash');
+	var FORUM_ID  = menu.getAttribute('data-forum-id');
+	var MSG_ROLE  = menu.getAttribute('data-msg-role');
+	var MSG_FAIL  = menu.getAttribute('data-msg-fail');
+	var MSG_OK    = menu.getAttribute('data-msg-ok');
+
+	var menuHead = document.getElementById('permmatrix-ctxmenu-head');
+	var toastEl  = document.getElementById('permmatrix-toast');
+	var current  = null;
+	var STATUS_LABELS = (function() {
+		var m = {};
+		menu.querySelectorAll('.permmatrix-ctxmenu-item').forEach(function(b) {
+			m[b.getAttribute('data-set')] = b.textContent.replace(/\s+/g, ' ').trim();
+		});
+		return m;
+	})();
+	var toastTimer = null;
+
+	function toast(msg, isError) {
+		toastEl.textContent = msg;
+		toastEl.className = 'permmatrix-toast' + (isError ? ' is-error' : '');
+		toastEl.style.display = 'block';
+		clearTimeout(toastTimer);
+		toastTimer = setTimeout(function() { toastEl.style.display = 'none'; }, 3000);
+	}
+
+	function closeMenu() {
+		menu.classList.remove('is-open');
+		current = null;
+	}
+
+	function openMenu(cell, x, y) {
+		current = cell;
+		var groupName = '';
+		var idx = Array.prototype.indexOf.call(cell.parentNode.children, cell);
+		var headers = document.querySelectorAll('.permmatrix-table thead th');
+		if (headers[idx]) { groupName = headers[idx].getAttribute('title') || ''; }
+		menuHead.textContent = cell.getAttribute('data-option') + (groupName ? ' \u2014 ' + groupName : '');
+
+		menu.classList.add('is-open');
+		var mw = menu.offsetWidth, mh = menu.offsetHeight;
+		var maxX = window.pageXOffset + document.documentElement.clientWidth  - mw - 8;
+		var maxY = window.pageYOffset + document.documentElement.clientHeight - mh - 8;
+		menu.style.left = Math.max(0, Math.min(x, maxX)) + 'px';
+		menu.style.top  = Math.max(0, Math.min(y, maxY)) + 'px';
+	}
+
+	function findCell(target) {
+		if (!target || !target.closest) { return null; }
+		return target.closest('.permmatrix-perm-cell');
+	}
+
+	function handleOpen(e) {
+		var cell = findCell(e.target);
+		if (!cell) { return false; }
+
+		if (cell.getAttribute('data-editable') !== '1') { return false; }
+
+		e.preventDefault();
+		openMenu(cell, e.pageX, e.pageY);
+		return true;
+	}
+
+	// Ouverture au clic gauche (principal) et au clic droit (secondaire)
+	document.addEventListener('click', function(e) {
+		if (menu.contains(e.target)) { return; }
+		if (handleOpen(e)) { return; }
+		closeMenu();
+	});
+	document.addEventListener('contextmenu', function(e) { handleOpen(e); });
+
+	document.addEventListener('keydown', function(e) {
+		if (e.key === 'Escape') { closeMenu(); }
+	});
+	window.addEventListener('scroll', closeMenu);
+
+	menu.addEventListener('click', function(e) {
+		var btn = e.target.closest ? e.target.closest('.permmatrix-ctxmenu-item') : null;
+		if (!btn || !current) { return; }
+
+		var cell    = current;
+		var setting = btn.getAttribute('data-set');
+		closeMenu();
+
+		var valueLabel = btn.textContent.replace(/\s+/g, ' ').trim();
+		var ctx = buildContext(cell, valueLabel);
+
+		// Une case issue d'un modèle va vers le dialogue de choix du serveur,
+		// qui porte déjà son propre récapitulatif : pas de double confirmation.
+		if (cell.getAttribute('data-hasrole') === '1') {
+			send(cell, setting, '', ctx);
+		} else {
+			showConfirmDialog(ctx, function() { send(cell, setting, '', ctx); });
+		}
+	});
+
+
+	var roleDlg = document.getElementById('permmatrix-roledlg');
+
+	function fmt(tpl, a, b) {
+		return String(tpl).replace('%1$s', a).replace('%2$s', b);
+	}
+
+	function showRoleDialog(d, ctx, onChoice) {
+		if (!roleDlg) { return; }
+		document.getElementById('permmatrix-roledlg-title').textContent =
+			fmt(roleDlg.getAttribute('data-title'), d.role_name);
+		document.getElementById('permmatrix-roledlg-intro').textContent =
+			fmt(roleDlg.getAttribute('data-intro'), d.role_name);
+		document.getElementById('permmatrix-roledlg-updatedesc').textContent =
+			fmt(roleDlg.getAttribute('data-update-desc'), d.role_usage, d.role_name);
+		document.getElementById('permmatrix-roledlg-breakdesc').textContent =
+			fmt(roleDlg.getAttribute('data-break-desc'), d.role_name);
+
+		// Le modèle est nommé dans le bouton, pas seulement dans le titre
+		document.getElementById('pm-choice-update-label').textContent =
+			fmt(roleDlg.getAttribute('data-update-label'), d.role_name);
+
+		// Rappel de ce qui va être appliqué
+		document.getElementById('pm-recap-group').textContent = ctx.group;
+		document.getElementById('pm-recap-perm').textContent  = ctx.perm;
+		document.getElementById('pm-recap-value').textContent = ctx.value;
+		document.getElementById('pm-recap-role').textContent  = d.role_name;
+
+		// L'élément (forum) n'existe que sur la matrice des permissions de forum
+		var itemRow = document.getElementById('pm-recap-item-row');
+		if (ctx.item) {
+			document.getElementById('pm-recap-item').textContent = ctx.item;
+			itemRow.style.display = '';
+		} else {
+			itemRow.style.display = 'none';
+		}
+
+		roleDlg.classList.add('is-open');
+
+		function handler(e) {
+			var btn = e.target.closest ? e.target.closest('[data-action]') : null;
+			if (!btn) {
+				if (e.target === roleDlg) { close(); }
+				return;
+			}
+			var action = btn.getAttribute('data-action');
+			close();
+			if (action !== 'cancel') { onChoice(action); }
+		}
+		function close() {
+			roleDlg.classList.remove('is-open');
+			roleDlg.removeEventListener('click', handler);
+		}
+		roleDlg.addEventListener('click', handler);
+	}
+
+
+	// Reconstitue le contexte lisible de la cellule cliquée. Sur la matrice des
+	// forums le groupe est global et la ligne désigne un forum ; sur la matrice
+	// des permissions globales le groupe est porté par la colonne.
+
+	var cfmDlg = document.getElementById('permmatrix-confirmdlg');
+
+	// Toute modification passe par une confirmation : l'écriture est immédiate
+	// et il n'existe pas d'annulation.
+	function showConfirmDialog(ctx, onOk) {
+		if (!cfmDlg) { onOk(); return; }
+
+		document.getElementById('pm-cfm-title').textContent = cfmDlg.getAttribute('data-title');
+		document.getElementById('pm-cfm-intro').textContent = cfmDlg.getAttribute('data-intro');
+		document.getElementById('pm-cfm-group').textContent = ctx.group;
+		document.getElementById('pm-cfm-perm').textContent  = ctx.perm;
+		document.getElementById('pm-cfm-value').textContent = ctx.value;
+		document.getElementById('pm-cfm-current').textContent = ctx.current;
+
+		var itemRow = document.getElementById('pm-cfm-item-row');
+		if (ctx.item) {
+			document.getElementById('pm-cfm-item').textContent = ctx.item;
+			itemRow.style.display = '';
+		} else {
+			itemRow.style.display = 'none';
+		}
+
+		cfmDlg.classList.add('is-open');
+
+		function cfmHandler(e) {
+			var btn = e.target.closest ? e.target.closest('[data-action]') : null;
+			if (!btn) {
+				if (e.target === cfmDlg) { cfmClose(); }
+				return;
+			}
+			var action = btn.getAttribute('data-action');
+			cfmClose();
+			if (action === 'ok') { onOk(); }
+		}
+		function cfmClose() {
+			cfmDlg.classList.remove('is-open');
+			cfmDlg.removeEventListener('click', cfmHandler);
+		}
+		cfmDlg.addEventListener('click', cfmHandler);
+	}
+
+	function buildContext(cell, valueLabel) {
+		var row = cell.parentNode;
+		var idx = Array.prototype.indexOf.call(row.children, cell);
+		var ths = document.querySelectorAll('.permmatrix-table thead th');
+		var col = ths[idx] ? (ths[idx].getAttribute('title') || ths[idx].textContent) : '';
+		col = String(col).replace(/\s+/g, ' ').trim();
+
+		var firstCell = row.querySelector('.permmatrix-forum-cell');
+		var rowLabel = firstCell ? firstCell.textContent.replace(/\s+/g, ' ').trim() : '';
+
+		var isForumPage = roleDlg && roleDlg.getAttribute('data-page-mode') === 'forum';
+
+		var cur = (cell.className.match(/permmatrix-(yes|no|never|undef)\b/) || [])[1] || 'undef';
+
+		return {
+			group:   isForumPage ? (roleDlg.getAttribute('data-group-name') || '') : col,
+			item:    isForumPage ? rowLabel : '',
+			perm:    cell.getAttribute('data-option'),
+			value:   valueLabel,
+			current: STATUS_LABELS[cur] || cur
+		};
+	}
+
+	function send(cell, setting, roleAction, ctx) {
+		ctx = ctx || buildContext(cell, setting);
+		var body = new URLSearchParams();
+		body.append('group_id', cell.getAttribute('data-group-id'));
+		body.append('option',   cell.getAttribute('data-option'));
+		body.append('forum_id', cell.getAttribute('data-forum-id') || FORUM_ID);
+		body.append('setting',  setting);
+		body.append('hash',     EDIT_HASH);
+		if (roleAction) { body.append('role_action', roleAction); }
+
+		cell.classList.add('permmatrix-cell-saving');
+
+		fetch(EDIT_URL, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+				'X-Requested-With': 'XMLHttpRequest'
+			},
+			credentials: 'same-origin',
+			body: body.toString()
+		})
+		.then(function(r) { return r.json().then(function(j) { return { ok: r.ok, data: j }; }); })
+		.then(function(res) {
+			cell.classList.remove('permmatrix-cell-saving');
+			var d = res.data || {};
+
+			// Le groupe utilise un modèle : proposer le choix à l'administrateur
+			if (d.needs_choice) {
+				showRoleDialog(d, ctx, function(action) { send(cell, setting, action); });
+				return;
+			}
+
+			if (!res.ok || !d.success) {
+				toast(d.error ? d.error : MSG_FAIL, true);
+				return;
+			}
+
+			// Après conversion d'un modèle, toute la ligne a changé : on recharge
+			if (d.role_broken || d.role_updated) {
+				window.location.reload();
+				return;
+			}
+
+			cell.textContent = d.icon;
+			cell.className = cell.className
+				.replace(/permmatrix-(yes|no|never|undef)\b/g, '')
+				.replace(/\s+/g, ' ')
+				.trim() + ' permmatrix-' + d.setting + ' permmatrix-cell-saved';
+			setTimeout(function() { cell.classList.remove('permmatrix-cell-saved'); }, 900);
+			toast(MSG_OK, false);
+		})
+		.catch(function() {
+			cell.classList.remove('permmatrix-cell-saving');
+			toast(MSG_FAIL, true);
+		});
+	}
+})();
+</script>
+<!-- ENDIF -->
 
 <!-- INCLUDE overall_footer.html -->
