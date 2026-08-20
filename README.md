@@ -1,109 +1,93 @@
 # Forum Permission Matrix
 
-[![Version](https://img.shields.io/badge/version-1.2.5-blue.svg)](https://github.com/verturin/permmatrix/releases)
+[![Version](https://img.shields.io/badge/version-1.3.9-blue.svg)](https://github.com/verturin/permmatrix/releases)
 [![phpBB](https://img.shields.io/badge/phpBB-3.3.14+-orange.svg)](https://www.phpbb.com/)
 [![License](https://img.shields.io/badge/license-GPL--2.0-green.svg)](LICENSE)
 
-Interactive permission matrices for phpBB 3.3+ with **permission backup and restore**, multi-group comparison, native ACP categorization, and real-time filtering.
+Read your phpBB permissions as a matrix instead of clicking through the ACP one group at a time — and, when you need to, change them right there.
 
-## Features
+## What it does
 
-### 🗂️ Dual Permission Views
+phpBB's permission screens show one group and one forum at a time. This extension puts everything on a grid, so you can see at a glance which group can do what, spot the odd one out, and fix it.
 
-- **Forum Permissions Page** (`/permmatrix`)
-  - Matrix of forum permissions (f_*) by group
-  - One group, all forums in columns
-  - Sticky headers and first column for easy navigation
-  
-- **Admin Permissions Page** (`/permmatrix-user`)
-  - User (u_*), Moderator (m_*), and Admin (a_*) permissions
-  - Multi-group comparison
-  - Native phpBB ACP categorization (Profile, Posts, PM, Misc, Settings, etc.)
+### Two matrices
 
-### 💾 Permission Backup & Restore (new in 1.2.x)
+**Forum permissions** (`/permmatrix`) — pick a group, see every forum against every forum permission (`f_*`).
 
-- Export the permissions of any installed extension as a JSON file
-- Restore permissions after `Delete data` + re-enable, without reconfiguring everything
-- Permissions are detected by reading each extension's `migrations/` files (exact, not heuristic)
-- Captures direct permissions, role definitions, role-to-group and role-to-user assignments
-- Custom groups created by the admin are fully supported
+**Global permissions** (`/permmatrix-user`) — user, moderator and admin permissions (`u_*`, `m_*`, `a_*`) with several groups side by side, organised under phpBB's own categories (Profile, Posting, PM, Settings…).
 
-### 🎛️ Interactive Filtering
+Cells are colour-coded: ✔ allowed · ✖ never · – not set · · undefined.
 
-- Filter by permission type (User / Moderator / Admin)
-- Multi-select groups, with "Select all" / "Deselect all"
-- JavaScript-based, no page reload
+### Editing from the grid
 
-### ⚙️ Administrative Control
+Administrators can click a cell and set it to Allowed, No, Never or Not set. The change is written immediately and the permission cache is cleared.
 
-- ACP panel: enable/disable matrix access
-- Separate "Hidden Groups" configuration for the forum page and the admin page
-- New dedicated tab: **Permission Backup / Restore**
+This is **off by default**. A single ACP setting decides both who can see the global permissions page and whether editing works at all:
 
-### 🎨 Interface
+| Mode | Who sees `/permmatrix-user` | Editing |
+|---|---|---|
+| **Public** (default) | Per the usual permission check | Disabled — for everyone, including admins |
+| **Administrators only** | Holders of `a_authgroups` | Enabled on both matrices |
 
-- Navbar integration (desktop icons, full text on mobile burger menu)
-- Color-coded cells (✔️ Allowed · ✖️ Never · – Not set · · Undefined)
-- Sticky headers (column + row) while scrolling
+A page that is publicly readable is never writable. The rule is enforced when rendering the page *and* again on the AJAX endpoint, so a forged request in public mode is rejected.
 
-### 🌍 Multilingual
+While editing is on, a red banner with a blinking indicator makes it obvious — clicks write real permission changes and there is no undo.
 
-- English (en) and French (fr)
-- Easy to extend to other languages
+### Permission roles are handled properly
 
-## Installation
+Most phpBB permissions come from roles rather than from individual settings. Clicking such a cell opens a dialog that recaps the group, the forum, the permission, the new value and the role — then offers a genuine choice:
 
-1. Download the latest release: [permmatrix-v1.2.5.zip](https://github.com/verturin/permmatrix/releases/latest)
-2. Extract and upload the `permmatrix/` folder to `ext/verturin/`
-3. Enable in `ACP` → `Customise` → `Extensions`
-4. Grant the `u_permmatrix_view` permission to the desired groups
-5. Configure in `ACP` → `Extensions` → `Matrice des permissions`
+- **Update the role** — applies everywhere the role is assigned. The dialog tells you how many assignments that is. The role stays in place; reversible by editing it again.
+- **Convert to individual permissions** — affects only this group. Its current rights are copied one by one, then your change is applied. Not reversible without reassigning by hand.
 
-See [INSTALL.md](INSTALL.md) for detailed instructions and the upgrade procedure.
+Cells that come from a role carry a small orange corner so you know before clicking.
 
-## Quick Usage
+### Backup and restore
 
-### Browsing permissions
-- **Desktop**: click the navbar icons (👥 forums / 🛡️ admin)
-- **Mobile**: open the burger menu
+Deleting an extension's data wipes its permissions. Re-enabling brings them back empty, and you reconfigure everything by hand.
 
-### Backing up an extension's permissions
-1. ACP → Matrice des permissions → **Sauvegarde / Restauration des permissions**
-2. Pick an extension from the dropdown (the page previews exactly which permissions will be saved)
-3. Click **Download backup** → a `.json` file is generated
+The **Backup / Restore** tab exports any installed extension's permissions to a JSON file and restores them afterwards. Permissions are identified by reading that extension's own `migrations/` files, so the export contains exactly its permissions and nothing else.
 
-### Restoring permissions
-1. Re-enable the target extension first (its permissions must exist again)
-2. Same ACP page → Import section → pick the JSON file → **Restore permissions**
+The backup stores names — of permissions, groups, roles and users — never numeric IDs, which is what makes restoration survive the ID changes that a delete-and-re-enable cycle causes. It covers direct permissions, role definitions, and role-to-group and role-to-user assignments, including groups you created yourself.
 
-### Permission legend
+### Other
 
-| Symbol | Meaning |
-|---|---|
-| ✔️ | Allowed (YES) |
-| ✖️ | Never (NEVER — cannot be overridden) |
-| – | Not set (NO — can be overridden) |
-| · | Undefined |
+- Navbar icons on desktop, full labels in the mobile menu
+- Filter the global matrix by permission type; select groups with Ctrl+click
+- Hide irrelevant groups (bots, COPPA…) per page, configured separately for each URL
+- English and French
 
 ## Requirements
 
 - phpBB 3.3.14+
 - PHP 7.2+
-- JavaScript-enabled browser (for filtering)
+- JavaScript for filtering and editing
 
-## Upgrading
+## Installation
 
-From any earlier 1.x release, see [INSTALL.md → Upgrading](INSTALL.md#upgrading). The migration is automatic on extension re-enable; existing settings are preserved.
+1. Download [`permmatrix-v1.3.9.zip`](https://github.com/verturin/permmatrix/releases/latest)
+2. Upload the `permmatrix/` folder to `ext/verturin/`
+3. Enable it in `ACP` → `Customise` → `Extensions`
+4. Grant `u_permmatrix_view` to the groups that should see the matrices
+5. Configure under `ACP` → `Extensions` → `Matrice des permissions`
+
+[INSTALL.md](INSTALL.md) covers the upgrade path and troubleshooting.
+
+## Security notes
+
+Editing is validated server-side on every request: session, extension enabled, page mode, `a_authgroups` permission, CSRF token, and the existence of both the permission and the group. Hiding the menu client-side is never treated as protection.
+
+Two things worth knowing before you turn editing on:
+
+- An administrator can remove their own permissions. Founder accounts keep full admin rights, which is the recovery path.
+- These are board-side pages, so they use the normal session rather than the ACP session with its re-authentication step. That is inherent to editing from the front end, and it is the reason the "administrators only" mode exists.
+
+Try it on a group that doesn't matter before using it on a live one.
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/verturin/permmatrix/issues)
-- **Documentation**: [INSTALL.md](INSTALL.md) · [CHANGELOG.md](CHANGELOG.md)
+[Issues](https://github.com/verturin/permmatrix/issues) · [CHANGELOG](CHANGELOG.md) · [INSTALL](INSTALL.md)
 
 ## License
 
-GPL-2.0-only — see [LICENSE](LICENSE).
-
----
-
-**Made with ❤️ for the phpBB community** · [verturin](https://github.com/verturin)
+GPL-2.0-only — see [LICENSE](LICENSE). Built by [verturin](https://github.com/verturin).

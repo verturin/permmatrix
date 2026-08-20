@@ -7,3 +7,9 @@ verturin_permmatrix_user:
     path: /permmatrix-user
     defaults:
         _controller: verturin.permmatrix.user_controller:handle
+
+verturin_permmatrix_edit:
+    path: /permmatrix/edit
+    methods: [POST]
+    defaults:
+        _controller: verturin.permmatrix.edit_controller:handle

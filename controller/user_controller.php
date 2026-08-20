@@ -59,9 +59,29 @@ class user_controller
 			throw new \phpbb\exception\http_exception(403, 'PERMMATRIX_DISABLED');
 		}
 
-		if (!$this->auth->acl_get('a_board'))
+		// ───────────────────────────────
+		// MODE DE LA PAGE
+		// ───────────────────────────────
+		// admin_only = 0 : page publique, lecture seule pour tout le monde
+		// admin_only = 1 : page réservée aux administrateurs, édition possible
+		$admin_only = !empty($this->config['verturin_permmatrix_admin_only']);
+		$is_admin   = $this->auth->acl_get('a_authgroups');
+
+		if ($admin_only)
 		{
-			throw new \phpbb\exception\http_exception(403, 'PERMMATRIX_NOT_ALLOWED');
+			// Réservée aux administrateurs habilités à gérer les permissions
+			if (!$is_admin)
+			{
+				throw new \phpbb\exception\http_exception(403, 'PERMMATRIX_NOT_ALLOWED');
+			}
+		}
+		else
+		{
+			// Page publique : contrôle d'accès habituel
+			if (!$this->auth->acl_get('a_board'))
+			{
+				throw new \phpbb\exception\http_exception(403, 'PERMMATRIX_NOT_ALLOWED');
+			}
 		}
 
 		$this->user->add_lang(['acp/permissions', 'acp/permissions_phpbb']);
@@ -140,6 +160,29 @@ class user_controller
 			}
 		}
 		$this->db->sql_freeresult($result);
+
+		// ───────────────────────────────
+		// GROUPES PILOTÉS PAR UN RÔLE
+		// ───────────────────────────────
+		// Ces groupes ne sont pas éditables via le menu contextuel : modifier
+		// une seule case obligerait à casser le rôle entier.
+		$role_groups = [];
+		$sql = 'SELECT DISTINCT group_id
+				FROM ' . ACL_GROUPS_TABLE . '
+				WHERE forum_id = 0
+					AND auth_role_id > 0
+					AND ' . $this->db->sql_in_set('group_id', $group_ids);
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$role_groups[(int) $row['group_id']] = true;
+		}
+		$this->db->sql_freeresult($result);
+
+		// L'édition n'est possible QUE si la page est en mode « admins
+		// uniquement ». En mode public, aucune modification n'est proposée
+		// ni acceptée — la même règle est réappliquée dans edit_controller.
+		$can_edit = ($admin_only && $is_admin);
 
 		// ───────────────────────────────
 		// STRUCTURE ACP (TYPE + CAT)
@@ -241,14 +284,24 @@ class user_controller
 						else { $status = 'no'; $icon = '–'; }
 
 						$this->template->assign_block_vars('rows.cells', [
-							'GID'    => $gid,
-							'STATUS' => $status,
-							'ICON'   => $icon,
+							'GID'      => $gid,
+							'STATUS'   => $status,
+							'ICON'     => $icon,
+							'OPT'      => $perm,
+							'EDITABLE' => $can_edit,
+							'HAS_ROLE' => isset($role_groups[$gid]),
 						]);
 					}
 				}
 			}
 		}
+
+		$this->template->assign_vars([
+			'S_PERMMATRIX_CAN_EDIT' => $can_edit,
+			'U_PERMMATRIX_EDIT'     => $this->helper->route('verturin_permmatrix_edit'),
+			'PERMMATRIX_EDIT_HASH'  => generate_link_hash('permmatrix_edit'),
+			'PERMMATRIX_EDIT_FORUM_ID' => 0,
+		]);
 
 		return $this->helper->render(
 			'permmatrix_user_body.html',

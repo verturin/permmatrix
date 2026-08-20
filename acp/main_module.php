@@ -73,7 +73,8 @@ class main_module
 				trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			$enabled  = $request->variable('permmatrix_enabled', 0);
+			$enabled    = $request->variable('permmatrix_enabled', 0);
+			$admin_only = $request->variable('permmatrix_admin_only', 0);
 			$excluded = $request->variable('excluded_groups', [0]);
 			$excluded = array_map('intval', $excluded);
 			$excluded = array_filter($excluded);
@@ -83,6 +84,7 @@ class main_module
 			$excluded_user = array_filter($excluded_user);
 
 			$config->set('verturin_permmatrix_enabled', (int) $enabled);
+			$config->set('verturin_permmatrix_admin_only', (int) $admin_only);
 			$config->set('verturin_permmatrix_excluded_groups', implode(',', $excluded));
 			$config->set('verturin_permmatrix_excluded_groups_user', implode(',', $excluded_user));
 
@@ -105,6 +107,7 @@ class main_module
 		}
 
 		$template->assign_vars([
+			'PERMMATRIX_ADMIN_ONLY' => !empty($config['verturin_permmatrix_admin_only']),
 			'PERMMATRIX_ENABLED'  => (bool) $config['verturin_permmatrix_enabled'],
 			'U_ACTION'            => $this->u_action,
 		]);
