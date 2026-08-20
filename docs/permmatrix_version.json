@@ -6,13 +6,6 @@
             "download": "https://github.com/verturin/permmatrix/releases/download/v1.3.9/permmatrix-v1.3.9.zip",
             "eol": null,
             "security": false
-        },
-        "1.2": {
-            "current": "1.2.5",
-            "announcement": "https://github.com/verturin/permmatrix/releases/tag/v1.2.5",
-            "download": "https://github.com/verturin/permmatrix/releases/download/v1.2.5/permmatrix-v1.2.5.zip",
-            "eol": null,
-            "security": false
         }
     }
 }
