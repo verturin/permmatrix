@@ -1,0 +1,7 @@
+<td class="permmatrix-cell{% if cell.ROLE %} permmatrix-has-role{% endif %}"{% if cell.ROLE %} title="{{ lang('PERMMATRIX_ROLE')|e('html_attr') }} : {{ cell.ROLE }}"{% endif %}>
+	<select name="{{ cell.INPUT_NAME }}" class="permmatrix-select permmatrix-v{{ cell.VALUE }}" data-pm-cell data-orig="{{ cell.VALUE }}" data-perm="{{ cell.PERM }}" data-group="{{ cell.GROUP }}" data-forum="{{ cell.FORUM }}" data-role="{{ cell.ROLE }}" data-role-key="{{ cell.ROLE_KEY }}" data-role-usage="{{ cell.ROLE_USAGE }}" aria-label="{{ cell.GROUP }}{% if cell.FORUM %} — {{ cell.FORUM }}{% endif %}"{% if cell.S_LOCKED %} disabled="disabled"{% endif %}>
+		<option value="{{ S_PERM_YES }}"{% if cell.VALUE == S_PERM_YES %} selected="selected"{% endif %}>{{ lang('ACL_YES') }}</option>
+		<option value="{{ S_PERM_NO }}"{% if cell.VALUE == S_PERM_NO %} selected="selected"{% endif %}>{{ lang('ACL_NO') }}</option>
+		<option value="{{ S_PERM_NEVER }}"{% if cell.VALUE == S_PERM_NEVER %} selected="selected"{% endif %}>{{ lang('ACL_NEVER') }}</option>
+	</select>
+</td>

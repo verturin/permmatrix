@@ -1,130 +1,33 @@
-<!-- INCLUDE overall_header.html -->
+{% include 'overall_header.html' %}
+
+{% INCLUDECSS '@verturin_permmatrix/permmatrix_acp.css' %}
+
+<a id="maincontent"></a>
+
+<div class="permmatrix-acp">
 
 <h1>{{ lang('PERMMATRIX_SETTINGS') }}</h1>
+<p>{{ lang('PERMMATRIX_SETTINGS_EXPLAIN') }}</p>
 
 <form id="permmatrix_settings" method="post" action="{{ U_ACTION }}">
-
 	<fieldset>
-		<legend>{{ lang('PERMMATRIX_SETTINGS') }}</legend>
-
-		<div class="permmatrix-mode-box">
-			<p class="permmatrix-mode-title">{{ lang('PERMMATRIX_ADMIN_ONLY') }}</p>
-			<p class="permmatrix-mode-desc">{{ lang('PERMMATRIX_ADMIN_ONLY_EXPLAIN') }}</p>
-
-			<label class="permmatrix-mode-choice pm-mode-public">
-				<input type="radio" name="permmatrix_admin_only" value="0"<!-- IF not PERMMATRIX_ADMIN_ONLY --> checked="checked"<!-- ENDIF -->>
-				<span class="permmatrix-mode-label">{{ lang('PERMMATRIX_MODE_PUBLIC') }}</span>
-			</label>
-
-			<label class="permmatrix-mode-choice pm-mode-admin">
-				<input type="radio" name="permmatrix_admin_only" value="1"<!-- IF PERMMATRIX_ADMIN_ONLY --> checked="checked"<!-- ENDIF -->>
-				<span class="permmatrix-mode-label">{{ lang('PERMMATRIX_MODE_ADMIN') }}</span>
-			</label>
+		<legend>{{ lang('PERMMATRIX_EXCLUDED_GROUPS') }}</legend>
+		<p>{{ lang('PERMMATRIX_EXCLUDED_GROUPS_EXPLAIN') }}</p>
+		<div class="permmatrix-checklist">
+			{% for group in loops.groups %}
+				<label><input type="checkbox" class="checkbox" name="excluded_groups[]" value="{{ group.ID }}"{% if group.S_EXCLUDED %} checked="checked"{% endif %}> <span{% if group.COLOUR %} style="color: #{{ group.COLOUR }};"{% endif %}>{{ group.NAME }}</span></label>
+			{% endfor %}
 		</div>
-
-
-		<dl>
-			<dt>
-				<label>{{ lang('PERMMATRIX_ENABLED') }}</label>
-				<span>{{ lang('PERMMATRIX_ENABLED_EXPLAIN') }}</span>
-			</dt>
-			<dd>
-				<!-- IF PERMMATRIX_ENABLED -->
-				<label><input class="radio" type="radio" name="permmatrix_enabled" value="1" checked="checked"> {{ lang('YES') }}</label>&nbsp;
-				<label><input class="radio" type="radio" name="permmatrix_enabled" value="0"> {{ lang('NO') }}</label>
-				<!-- ELSE -->
-				<label><input class="radio" type="radio" name="permmatrix_enabled" value="1"> {{ lang('YES') }}</label>&nbsp;
-				<label><input class="radio" type="radio" name="permmatrix_enabled" value="0" checked="checked"> {{ lang('NO') }}</label>
-				<!-- ENDIF -->
-			</dd>
-		</dl>
-
-
-		<dl>
-			<dt>
-				<label>{{ lang('PERMMATRIX_EXCLUDED_GROUPS') }}</label>
-				<span>{{ lang('PERMMATRIX_EXCLUDED_GROUPS_EXPLAIN') }}</span>
-			</dt>
-			<dd>
-				<!-- BEGIN groups -->
-				<!-- IF groups.EXCLUDED -->
-				<label><input type="checkbox" name="excluded_groups[]" value="{{ groups.ID }}" checked="checked"> {{ groups.NAME }}</label>&nbsp;&nbsp;
-				<!-- ELSE -->
-				<label><input type="checkbox" name="excluded_groups[]" value="{{ groups.ID }}"> {{ groups.NAME }}</label>&nbsp;&nbsp;
-				<!-- ENDIF -->
-				<!-- END groups -->
-			</dd>
-		</dl>
-		
-		<dl>
-			<dt>
-				<label>{{ lang('PERMMATRIX_EXCLUDED_GROUPS_USER') }}</label>
-				<span>{{ lang('PERMMATRIX_EXCLUDED_GROUPS_USER_EXPLAIN') }}</span>
-			</dt>
-			<dd>
-				<!-- BEGIN groups -->
-				<!-- IF groups.EXCLUDED_USER -->
-				<label><input type="checkbox" name="excluded_groups_user[]" value="{{ groups.ID }}" checked="checked"> {{ groups.NAME }}</label>&nbsp;&nbsp;
-				<!-- ELSE -->
-				<label><input type="checkbox" name="excluded_groups_user[]" value="{{ groups.ID }}"> {{ groups.NAME }}</label>&nbsp;&nbsp;
-				<!-- ENDIF -->
-				<!-- END groups -->
-			</dd>
-		</dl>
-
 	</fieldset>
 
 	<fieldset class="submit-buttons">
+		<legend>{{ lang('SUBMIT') }}</legend>
+		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}">&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}">
 		{{ S_FORM_TOKEN }}
-		<input class="button1" type="submit" name="submit" value="{{ lang('SUBMIT') }}">
-		<input class="button2" type="reset" value="{{ lang('RESET') }}">
 	</fieldset>
-
 </form>
 
-<!-- INCLUDE overall_footer.html -->
+</div>
 
-<style>
-.permmatrix-mode-box {
-	margin: 0 0 22px;
-	padding: 16px 18px;
-	background: #fff8f7;
-	border: 2px solid #c0392b;
-	border-left: 7px solid #c0392b;
-	border-radius: 5px;
-}
-.permmatrix-mode-title {
-	margin: 0 0 4px;
-	font-size: 1.25em;
-	font-weight: bold;
-	color: #c0392b;
-}
-.permmatrix-mode-desc {
-	margin: 0 0 14px;
-	font-size: 0.9em;
-	color: #555;
-}
-.permmatrix-mode-choice {
-	display: block;
-	margin: 0 0 8px;
-	padding: 11px 14px;
-	background: #fff;
-	border: 2px solid #ccc;
-	border-radius: 4px;
-	cursor: pointer;
-	font-size: 1em;
-}
-.permmatrix-mode-choice:hover { border-color: #999; }
-.permmatrix-mode-choice input { margin-right: 10px; vertical-align: middle; }
-.permmatrix-mode-label { vertical-align: middle; font-weight: 600; }
-.pm-mode-public:has(input:checked) {
-	border-color: #2d8a4e;
-	background: #e6f4ea;
-	box-shadow: 0 0 0 2px rgba(45,138,78,.18);
-}
-.pm-mode-admin:has(input:checked) {
-	border-color: #c0392b;
-	background: #fbe9e7;
-	box-shadow: 0 0 0 2px rgba(192,57,43,.18);
-}
-</style>
+{% include 'overall_footer.html' %}

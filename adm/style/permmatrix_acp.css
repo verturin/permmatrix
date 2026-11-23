@@ -1,0 +1,607 @@
+/**
+ * Forum Permission Matrix — ACP styles
+ * Shared by the Matrix, Settings and Backup pages.
+ * Everything is scoped under .permmatrix-acp so the core ACP styles are untouched.
+ */
+
+/* ---------------------------------------------------------------------
+   Boxes (same look as the CAForum extensions)
+--------------------------------------------------------------------- */
+.permmatrix-acp fieldset {
+	border-radius: 1em;
+	box-shadow: .1em .1em 0 0 #899599;
+}
+
+.permmatrix-acp legend {
+	margin-left: 1em;
+	top: .15em;
+	border: .1em solid #d7d7d7;
+	border-radius: .6em;
+	background-color: #fff;
+	padding: 4px 8px;
+}
+
+.rtl .permmatrix-acp legend {
+	margin-left: 0;
+	margin-right: 1em;
+}
+
+.permmatrix-notice {
+	padding: 6px 10px;
+	border-left: 4px solid #e6a800;
+	background: #fff8e1;
+}
+
+.permmatrix-empty {
+	padding: 12px;
+	border: 1px dashed #b4c4d1;
+	border-radius: 6px;
+	background: #f6f9fb;
+	text-align: center;
+}
+
+.permmatrix-sub {
+	font-weight: normal;
+	opacity: .75;
+}
+
+.permmatrix-optname,
+.permmatrix-techname {
+	display: inline-block;
+	padding: 0 4px;
+	border-radius: 3px;
+	background: #eef2f5;
+	color: #456;
+	font-size: .85em;
+	font-weight: normal;
+}
+
+.permmatrix-explain {
+	display: block;
+	font-size: .85em;
+	font-weight: normal;
+	opacity: .8;
+}
+
+/* ---------------------------------------------------------------------
+   Tabs
+--------------------------------------------------------------------- */
+.permmatrix-tabbar {
+	margin: 10px 0 15px;
+}
+
+.permmatrix-tabrow {
+	display: flex;
+	align-items: flex-end;
+	gap: 10px;
+	border-bottom: 2px solid #105289;
+	margin-bottom: 6px;
+}
+
+.permmatrix-tabrow-label {
+	flex: 0 0 auto;
+	min-width: 90px;
+	padding-bottom: 6px;
+	color: #105289;
+	font-size: .8em;
+	font-weight: bold;
+	text-transform: uppercase;
+	letter-spacing: .05em;
+}
+
+.permmatrix-tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+.permmatrix-tab {
+	padding: 6px 14px;
+	border: 1px solid #b4c4d1;
+	border-bottom: 0;
+	border-radius: 5px 5px 0 0;
+	background: #e6eef4;
+	color: #105289;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.permmatrix-tab:hover,
+.permmatrix-tab:focus {
+	background: #d1e0ec;
+	text-decoration: none;
+}
+
+.permmatrix-tab.active {
+	background: #105289;
+	border-color: #105289;
+	color: #fff;
+}
+
+.permmatrix-tabs-native .permmatrix-tab {
+	background: #f1f1f1;
+	border-color: #ccc;
+	color: #444;
+}
+
+.permmatrix-tabs-native .permmatrix-tab.active {
+	background: #555;
+	border-color: #555;
+	color: #fff;
+}
+
+.permmatrix-tab-count {
+	display: inline-block;
+	min-width: 1.4em;
+	margin-left: 4px;
+	padding: 0 5px;
+	border-radius: 9px;
+	background: rgba(0, 0, 0, .12);
+	font-size: .8em;
+	text-align: center;
+}
+
+.permmatrix-tab.active .permmatrix-tab-count {
+	background: rgba(255, 255, 255, .25);
+}
+
+/* ---------------------------------------------------------------------
+   Tab header + version badge (shields.io look, no external request)
+--------------------------------------------------------------------- */
+.permmatrix-head h2 {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 4px;
+}
+
+.permmatrix-badge {
+	display: inline-flex;
+	border-radius: 4px;
+	overflow: hidden;
+	font-family: Verdana, Geneva, "DejaVu Sans", sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	line-height: 18px;
+	color: #fff;
+	text-shadow: 0 1px 0 rgba(1, 1, 1, .3);
+}
+
+.permmatrix-badge span {
+	display: block;
+	padding: 0 6px;
+}
+
+.permmatrix-badge-label {
+	background: #555;
+}
+
+.permmatrix-badge-value {
+	background: #97ca00;
+}
+
+/* ---------------------------------------------------------------------
+   Forums tab selectors, filter
+--------------------------------------------------------------------- */
+.permmatrix-filters,
+.permmatrix-search {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	margin: 10px 0;
+	padding: 8px 10px;
+	border: 1px solid #d7d7d7;
+	border-radius: 6px;
+	background: #f7f9fb;
+}
+
+.permmatrix-filters label,
+.permmatrix-search label {
+	font-weight: bold;
+}
+
+.permmatrix-search input {
+	width: 280px;
+	max-width: 100%;
+}
+
+.permmatrix-native-link {
+	margin-left: auto;
+}
+
+/* ---------------------------------------------------------------------
+   Matrix table
+--------------------------------------------------------------------- */
+.permmatrix-scroll {
+	max-width: 100%;
+	max-height: 75vh;
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+}
+
+.permmatrix-table {
+	margin: 0;
+	border-collapse: separate;
+	border-spacing: 0;
+}
+
+.permmatrix-table th,
+.permmatrix-table td {
+	vertical-align: middle;
+}
+
+/* Sticky header row */
+.permmatrix-table thead th {
+	position: sticky;
+	top: 0;
+	z-index: 2;
+}
+
+/* Sticky first column */
+.permmatrix-table .permmatrix-col-label {
+	position: sticky;
+	left: 0;
+	z-index: 1;
+	min-width: 240px;
+	max-width: 380px;
+	text-align: left;
+	white-space: normal;
+}
+
+/* Row labels are <th scope="row">: cancel the ACP header look (white uppercase on blue) */
+.permmatrix-table tbody th.permmatrix-col-label {
+	padding: 5px 8px;
+	border-bottom: 1px solid #e3e8ec;
+	background: #fff;
+	background-image: none;
+	color: #333;
+	font-size: 1em;
+	font-weight: normal;
+	text-transform: none;
+	letter-spacing: normal;
+}
+
+.permmatrix-table tbody th.permmatrix-col-label strong {
+	color: #105289;
+}
+
+.permmatrix-table thead .permmatrix-col-label {
+	z-index: 3;
+}
+
+.permmatrix-table tbody tr:nth-child(even) th.permmatrix-col-label {
+	background: #f7f9fb;
+}
+
+/* Vertical headers: many groups / permissions fit */
+.permmatrix-table th.permmatrix-vertical {
+	height: 170px;
+	padding: 6px 2px;
+	vertical-align: bottom;
+	text-align: center;
+	white-space: nowrap;
+}
+
+.permmatrix-table th.permmatrix-vertical a,
+.permmatrix-table th.permmatrix-vertical span {
+	display: inline-block;
+	color: inherit;
+}
+
+.permmatrix-table th.permmatrix-vertical span {
+	writing-mode: vertical-rl;
+	transform: rotate(180deg);
+	max-height: 160px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.permmatrix-ext-dot,
+.permmatrix-ext-dot-inline {
+	display: inline-block;
+	width: 7px;
+	height: 7px;
+	margin-top: 3px;
+	border-radius: 50%;
+	background: #6b3fc2;
+}
+
+/* Sections (u_, m_, a_) and categories */
+.permmatrix-section-head th {
+	text-transform: none;
+	background-image: none;
+	padding: 8px 10px;
+	background: #105289;
+	color: #fff;
+	text-align: left;
+	font-size: 1.05em;
+}
+
+.permmatrix-cat td {
+	position: sticky;
+	left: 0;
+	padding: 4px 10px;
+	background: #e6eef4;
+	color: #105289;
+	font-weight: bold;
+	text-align: left;
+}
+
+/* Orphan permissions (extension removed without deleting its data) */
+.permmatrix-cat.permmatrix-cat-orphan td {
+	background: #f3e5e5;
+	color: #8a2b2b;
+}
+
+.permmatrix-table tbody .permmatrix-row-orphan th.permmatrix-col-label strong {
+	color: #8a2b2b;
+	font-style: italic;
+}
+
+.permmatrix-table tbody tr:hover > td,
+.permmatrix-table tbody tr:hover > th.permmatrix-col-label {
+	background-color: #fffbe6;
+}
+
+/* Forums tab: hierarchy */
+.permmatrix-table tbody .permmatrix-forum-cat th.permmatrix-col-label {
+	font-weight: bold;
+	background: #eef2f5;
+}
+
+.permmatrix-depth-1 .permmatrix-forum-name { padding-left: 16px; }
+.permmatrix-depth-2 .permmatrix-forum-name { padding-left: 32px; }
+.permmatrix-depth-3 .permmatrix-forum-name { padding-left: 48px; }
+.permmatrix-depth-4 .permmatrix-forum-name { padding-left: 64px; }
+
+.permmatrix-forum-name {
+	display: inline-block;
+}
+
+.permmatrix-forum-link .permmatrix-forum-name {
+	font-style: italic;
+}
+
+.permmatrix-role {
+	display: inline-block;
+	margin-left: 6px;
+	padding: 0 5px;
+	border-radius: 3px;
+	background: #fff1dc;
+	color: #9a5a00;
+	font-size: .8em;
+	font-weight: normal;
+}
+
+/* ---------------------------------------------------------------------
+   Cells
+--------------------------------------------------------------------- */
+.permmatrix-cell {
+	padding: 3px 2px;
+	text-align: center;
+	position: relative;
+}
+
+.permmatrix-select {
+	min-width: 64px;
+	padding: 2px;
+	border: 1px solid #bbb;
+	border-radius: 4px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.permmatrix-v1  { color: #1e7b34; background-color: #e3f6e8; }
+.permmatrix-v-1 { color: #555;    background-color: #f2f2f2; }
+.permmatrix-v0  { color: #a3122d; background-color: #fde4e4; }
+
+.permmatrix-select:disabled {
+	cursor: not-allowed;
+	opacity: .55;
+}
+
+/* Cell driven by a role: orange corner */
+.permmatrix-has-role::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	border-style: solid;
+	border-width: 0 8px 8px 0;
+	border-color: transparent #e08a00 transparent transparent;
+	pointer-events: none;
+}
+
+/* Changed cell */
+.permmatrix-changed {
+	background: #fff3b0 !important;
+}
+
+.permmatrix-changed .permmatrix-select {
+	outline: 2px solid #e6a800;
+	outline-offset: 1px;
+}
+
+.permmatrix-ro {
+	font-weight: bold;
+}
+
+.permmatrix-legend {
+	font-size: .9em;
+}
+
+/* ---------------------------------------------------------------------
+   Save bar
+--------------------------------------------------------------------- */
+.permmatrix-bar {
+	position: sticky;
+	bottom: 0;
+	z-index: 5;
+	display: none;
+	align-items: center;
+	gap: 10px;
+	margin-top: 10px;
+	padding: 10px 14px;
+	border: 2px solid #c0392b;
+	border-radius: 8px;
+	background: #fdecea;
+	box-shadow: 0 -2px 8px rgba(0, 0, 0, .15);
+}
+
+.permmatrix-bar.permmatrix-bar-active {
+	display: flex;
+}
+
+.permmatrix-bar-text {
+	margin-right: auto;
+	color: #a3122d;
+	font-weight: bold;
+}
+
+/* ---------------------------------------------------------------------
+   Confirmation dialog
+--------------------------------------------------------------------- */
+.permmatrix-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 16px;
+	background: rgba(0, 0, 0, .45);
+}
+
+.permmatrix-overlay[hidden] {
+	display: none;
+}
+
+.permmatrix-dialog {
+	width: 760px;
+	max-width: 100%;
+	max-height: 90vh;
+	display: flex;
+	flex-direction: column;
+	border-top: 6px solid #c0392b;
+	border-radius: 8px;
+	background: #fff;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+	padding: 14px 18px;
+}
+
+.permmatrix-dialog h3 {
+	margin-top: 0;
+	color: #a3122d;
+}
+
+.permmatrix-dialog-body {
+	overflow: auto;
+	flex: 1 1 auto;
+}
+
+.permmatrix-recap td {
+	padding: 4px 6px;
+}
+
+.permmatrix-strong {
+	font-weight: bold;
+}
+
+.permmatrix-rolechoice {
+	margin: 10px 0 0;
+	padding: 8px 10px;
+	border: 1px solid #e08a00;
+	border-radius: 6px;
+	background: #fff8ee;
+}
+
+.permmatrix-rolechoice label {
+	display: block;
+	margin: 4px 0;
+}
+
+.permmatrix-dialog-warning {
+	margin: 10px 0;
+	color: #a3122d;
+	font-weight: bold;
+}
+
+.permmatrix-dialog-buttons {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+/* Save report (message after applying) */
+.permmatrix-report {
+	margin: 8px 0 8px 20px;
+	text-align: left;
+	list-style: disc;
+}
+
+/* ---------------------------------------------------------------------
+   Local permissions, settings, backup
+--------------------------------------------------------------------- */
+.permmatrix-local {
+	margin-left: 20px;
+	list-style: disc;
+}
+
+.permmatrix-local li {
+	margin: 3px 0;
+}
+
+.permmatrix-checklist {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 4px 12px;
+}
+
+.permmatrix-checklist label {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 3px 6px;
+	border-radius: 4px;
+	white-space: normal;
+}
+
+.permmatrix-checklist label:hover {
+	background: #f1f5f9;
+}
+
+.permmatrix-preview {
+	min-height: 1.4em;
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	background: #f5f5f5;
+	color: #666;
+	font-family: monospace;
+	font-size: .9em;
+	word-break: break-word;
+}
+
+.permmatrix-preview.permmatrix-filled {
+	color: #222;
+}
+
+/* Narrow screens */
+@media (max-width: 700px) {
+	.permmatrix-tabrow {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 2px;
+	}
+
+	.permmatrix-table .permmatrix-col-label {
+		min-width: 150px;
+	}
+
+	.permmatrix-native-link {
+		margin-left: 0;
+	}
+}

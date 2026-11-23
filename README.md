@@ -1,88 +1,92 @@
 # Forum Permission Matrix
 
-[![Version](https://img.shields.io/badge/version-1.3.9-blue.svg)](https://github.com/verturin/permmatrix/releases)
+[![Tests](https://github.com/verturin/permmatrix/actions/workflows/tests.yml/badge.svg)](https://github.com/verturin/permmatrix/actions/workflows/tests.yml)
+[![Version](https://img.shields.io/badge/version-2.0.2-blue.svg)](https://github.com/verturin/permmatrix/releases)
 [![phpBB](https://img.shields.io/badge/phpBB-3.3.14+-orange.svg)](https://www.phpbb.com/)
-[![License](https://img.shields.io/badge/license-GPL--2.0-green.svg)](LICENSE)
+[![PHP](https://img.shields.io/badge/PHP-7.2%20→%208.4-777bb4.svg)](https://www.php.net/)
+[![License](https://img.shields.io/badge/license-GPL--2.0-green.svg)](license.txt)
 
-Read your phpBB permissions as a matrix instead of clicking through the ACP one group at a time — and, when you need to, change them right there.
+Every permission of your board on one grid, in the ACP — with **one tab per extension** — and the ability to change them right there, after a recap of what is about to change.
 
 ## What it does
 
-phpBB's permission screens show one group and one forum at a time. This extension puts everything on a grid, so you can see at a glance which group can do what, spot the odd one out, and fix it.
+phpBB's permission screens show one group and one forum at a time, and permissions added by extensions are scattered across the *Misc* tab and others. This extension gathers them in the ACP: pick an extension, see its permissions against every group, change what needs changing.
 
-### Two matrices
+### One tab per extension
 
-**Forum permissions** (`/permmatrix`) — pick a group, see every forum against every forum permission (`f_*`).
+`ACP` → `Extensions` → `Permission matrix`
 
-**Global permissions** (`/permmatrix-user`) — user, moderator and admin permissions (`u_*`, `m_*`, `a_*`) with several groups side by side, organised under phpBB's own categories (Profile, Posting, PM, Settings…).
+Each enabled extension that declares permissions gets its own tab, showing its display name and version. Its permissions are found by reading the extension's own `migrations/` files, so a tab contains exactly that extension's permissions and nothing else. Labels are translated with the extension's own language files and grouped under its own categories, as in phpBB's ACP.
 
-Cells are colour-coded: ✔ allowed · ✖ never · – not set · · undefined.
+An extension tab also lists:
 
-### Editing from the grid
+- its **per-forum permissions** (`f_*`, local `m_*`), with a link to the Forums tab where they are set;
+- the **users with individual permissions** on it (read only, up to 50).
 
-Administrators can click a cell and set it to Allowed, No, Never or Not set. The change is written immediately and the permission cache is cleared.
+### phpBB tabs
 
-This is **off by default**. A single ACP setting decides both who can see the global permissions page and whether editing works at all:
+| Tab | Content |
+|---|---|
+| **Forums** | One group, every forum against every forum permission (`f_*`) or local moderator permission (`m_*`) |
+| **Users** | phpBB's user permissions (`u_*`) for every group |
+| **Global moderators** | phpBB's global moderator permissions (`m_*`) |
+| **Administrators** | phpBB's admin permissions (`a_*`) |
 
-| Mode | Who sees `/permmatrix-user` | Editing |
-|---|---|---|
-| **Public** (default) | Per the usual permission check | Disabled — for everyone, including admins |
-| **Administrators only** | Holders of `a_authgroups` | Enabled on both matrices |
+The phpBB tabs show phpBB's own permissions only; those added by extensions stay in their extension's tab. In the Forums tab, columns belonging to an extension carry a purple dot.
 
-A page that is publicly readable is never writable. The rule is enforced when rendering the page *and* again on the AJAX endpoint, so a forged request in public mode is rejected.
+### Editing
 
-While editing is on, a red banner with a blinking indicator makes it obvious — clicks write real permission changes and there is no undo.
+Each cell is a Yes / No / Never list, coloured by value. Change as many cells as you like: changed cells are highlighted and a bar counts the pending changes. **Review and apply** opens a recap — group, forum, permission, before → after — and nothing is written until you confirm.
+
+Writing goes through phpBB's own permission API (`auth_admin::get_mask()` and `acl_set()`), exactly like `ACP` → `Permissions`. Every change is recorded in the admin log, and the permission cache is cleared.
 
 ### Permission roles are handled properly
 
-Most phpBB permissions come from roles rather than from individual settings. Clicking such a cell opens a dialog that recaps the group, the forum, the permission, the new value and the role — then offers a genuine choice:
+Most phpBB permissions come from roles. A cell driven by a role carries an orange corner, and the group name a ★. When such a cell is changed, the recap asks, for that group:
 
-- **Update the role** — applies everywhere the role is assigned. The dialog tells you how many assignments that is. The role stays in place; reversible by editing it again.
-- **Convert to individual permissions** — affects only this group. Its current rights are copied one by one, then your change is applied. Not reversible without reassigning by hand.
-
-Cells that come from a role carry a small orange corner so you know before clicking.
+- **Convert into individual permissions** (default) — affects only this group. All its current rights are copied from the role, then your change is applied. Nothing is lost.
+- **Update the role itself** — applies everywhere the role is assigned; the recap says how many assignments that is.
 
 ### Backup and restore
 
-Deleting an extension's data wipes its permissions. Re-enabling brings them back empty, and you reconfigure everything by hand.
-
-The **Backup / Restore** tab exports any installed extension's permissions to a JSON file and restores them afterwards. Permissions are identified by reading that extension's own `migrations/` files, so the export contains exactly its permissions and nothing else.
-
-The backup stores names — of permissions, groups, roles and users — never numeric IDs, which is what makes restoration survive the ID changes that a delete-and-re-enable cycle causes. It covers direct permissions, role definitions, and role-to-group and role-to-user assignments, including groups you created yourself.
+The **Backup / Restore** page exports an extension's permissions (groups, roles, users) to a JSON file and restores them later — useful before deleting an extension's data. The file stores names, never numeric IDs, so a restore survives a delete-and-re-enable cycle.
 
 ### Other
 
-- Navbar icons on desktop, full labels in the mobile menu
-- Filter the global matrix by permission type; select groups with Ctrl+click
-- Hide irrelevant groups (bots, COPPA…) per page, configured separately for each URL
+- Hide irrelevant groups (bots, COPPA…) from every tab in the settings
+- Filter rows by permission name or code
+- Only changed cells are sent, so large matrices never hit PHP's `max_input_vars`
+- Orphan permissions (left behind by an extension removed without *Delete data*) grouped at the end of the phpBB tabs, with an explanation
+- Twig templates, one stylesheet and one script shared by the ACP pages
 - English and French
 
 ## Requirements
 
 - phpBB 3.3.14+
-- PHP 7.2+
-- JavaScript for filtering and editing
+- PHP 7.2+ (tested on 8.3, compatible 8.4)
+- JavaScript for the recap (without it the form is still submitted, without recap)
 
 ## Installation
 
-1. Download [`permmatrix-v1.3.9.zip`](https://github.com/verturin/permmatrix/releases/latest)
-2. Upload the `permmatrix/` folder to `ext/verturin/`
-3. Enable it in `ACP` → `Customise` → `Extensions`
-4. Grant `u_permmatrix_view` to the groups that should see the matrices
-5. Configure under `ACP` → `Extensions` → `Matrice des permissions`
+1. Download [`permmatrix-v2.0.2.zip`](https://github.com/verturin/permmatrix/releases/latest)
+2. Upload the `verturin/` folder of the zip into `ext/` (it contains `verturin/permmatrix/`)
+3. Purge the cache, then enable it in `ACP` → `Customise` → `Extensions`
+4. Open `ACP` → `Extensions` → `Permission matrix`
 
-[INSTALL.md](INSTALL.md) covers the upgrade path and troubleshooting.
+**Upgrading from 2.0.x:** upload the new files over the old ones, then purge the cache.
+**Upgrading from 1.x:** delete the old folder before uploading — several files were removed. [INSTALL.md](INSTALL.md) has the exact steps.
 
-## Security notes
+## Security
 
-Editing is validated server-side on every request: session, extension enabled, page mode, `a_authgroups` permission, CSRF token, and the existence of both the permission and the group. Hiding the menu client-side is never treated as protection.
+Everything now happens in the ACP: the ACP session, its re-authentication step and `a_authgroups` permission protect the matrix. The two public pages of 1.x (`/permmatrix`, `/permmatrix-user`) and their AJAX endpoint are gone, along with the `u_permmatrix_view` permission.
 
-Two things worth knowing before you turn editing on:
+Server-side, every submitted cell is checked: form token, visible group, permission belonging to the current tab, valid value, founder-only permissions reserved to founders.
 
-- An administrator can remove their own permissions. Founder accounts keep full admin rights, which is the recovery path.
-- These are board-side pages, so they use the normal session rather than the ACP session with its re-authentication step. That is inherent to editing from the front end, and it is the reason the "administrators only" mode exists.
+An administrator can still remove their own rights. Founder accounts keep full admin rights, which is the recovery path.
 
-Try it on a group that doesn't matter before using it on a live one.
+## Quality checks
+
+Every push runs phpBB's official extension checks on GitHub Actions ([phpbb-extensions/test-framework](https://github.com/phpbb-extensions/test-framework)): the Extension Pre-Validator (EPV), phpBB's coding standard (CodeSniffer) and the executable-file check. Release 2.0.2 passes all three with no error and no warning.
 
 ## Support
 
@@ -90,4 +94,4 @@ Try it on a group that doesn't matter before using it on a live one.
 
 ## License
 
-GPL-2.0-only — see [LICENSE](LICENSE). Built by [verturin](https://github.com/verturin).
+GPL-2.0-only — see [license.txt](license.txt). Built by [verturin](https://github.com/verturin).

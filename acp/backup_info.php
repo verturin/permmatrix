@@ -9,11 +9,6 @@
 
 namespace verturin\permmatrix\acp;
 
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 class backup_info
 {
 	public function module()

@@ -9,11 +9,6 @@
 
 namespace verturin\permmatrix\migrations;
 
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 class install_data extends \phpbb\db\migration\migration
 {
 	/**
