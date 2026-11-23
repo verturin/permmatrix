@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <title>Forum Permission Matrix</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b6aa8"/>
+      <stop offset="1" stop-color="#0e3a66"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Tile -->
+  <rect x="0" y="0" width="512" height="512" rx="104" fill="url(#bg)"/>
+
+  <g transform="translate(9 2)">
+  <!-- Column headers (groups) -->
+  <g fill="#ffffff" fill-opacity="0.6">
+    <rect x="206" y="80" width="24" height="76" rx="12"/>
+    <rect x="296" y="96" width="24" height="60" rx="12"/>
+    <rect x="386" y="86" width="24" height="70" rx="12"/>
+  </g>
+
+  <!-- Row headers (permissions) -->
+  <g fill="#ffffff" fill-opacity="0.6">
+    <rect x="68"  y="208" width="84" height="24" rx="12"/>
+    <rect x="84"  y="298" width="68" height="24" rx="12"/>
+    <rect x="76"  y="388" width="76" height="24" rx="12"/>
+  </g>
+
+  <!-- Cells: Yes = green, No = grey, Never = red -->
+  <g>
+    <rect x="178" y="180" width="80" height="80" rx="18" fill="#2fb35a"/>
+    <rect x="268" y="180" width="80" height="80" rx="18" fill="#2fb35a"/>
+    <rect x="358" y="180" width="80" height="80" rx="18" fill="#e0473f"/>
+
+    <rect x="178" y="270" width="80" height="80" rx="18" fill="#2fb35a"/>
+    <rect x="268" y="270" width="80" height="80" rx="18" fill="#d5dde5"/>
+    <rect x="358" y="270" width="80" height="80" rx="18" fill="#2fb35a"/>
+
+    <rect x="178" y="360" width="80" height="80" rx="18" fill="#e0473f"/>
+    <rect x="268" y="360" width="80" height="80" rx="18" fill="#2fb35a"/>
+    <rect x="358" y="360" width="80" height="80" rx="18" fill="#d5dde5"/>
+  </g>
+
+  <!-- Glyphs -->
+  <g fill="none" stroke="#ffffff" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Yes -->
+    <path d="M198 221 l13 13 l27 -28"/>
+    <path d="M288 221 l13 13 l27 -28"/>
+    <path d="M198 311 l13 13 l27 -28"/>
+    <path d="M378 311 l13 13 l27 -28"/>
+    <path d="M288 401 l13 13 l27 -28"/>
+    <!-- Never -->
+    <path d="M382 204 l32 32 M414 204 l-32 32"/>
+    <path d="M202 384 l32 32 M234 384 l-32 32"/>
+  </g>
+  <g stroke="#6b7c8d" stroke-width="11" stroke-linecap="round">
+    <!-- No -->
+    <path d="M292 310 h32"/>
+    <path d="M382 400 h32"/>
+  </g>
+  </g>
+</svg>
