@@ -9,11 +9,6 @@
 
 namespace verturin\permmatrix\migrations;
 
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 class add_backup_module extends \phpbb\db\migration\migration
 {
 	/**

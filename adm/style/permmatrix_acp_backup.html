@@ -1,95 +1,74 @@
-<!-- INCLUDE overall_header.html -->
+{% include 'overall_header.html' %}
+
+{% INCLUDECSS '@verturin_permmatrix/permmatrix_acp.css' %}
 
 <a id="maincontent"></a>
+
+<div class="permmatrix-acp">
 
 <h1>{{ lang('PERMMATRIX_BACKUP') }}</h1>
 
 <p>{{ lang('PERMMATRIX_BACKUP_INTRO') }}</p>
 
 <form id="permmatrix_export" method="post" action="{{ U_ACTION }}">
-
 	<fieldset>
 		<legend>{{ lang('PERMMATRIX_BACKUP_EXPORT_TITLE') }}</legend>
-
 		<p>{{ lang('PERMMATRIX_BACKUP_EXPORT_EXPLAIN') }}</p>
-
 		<dl>
 			<dt>
-				<label for="ext_name">{{ lang('PERMMATRIX_BACKUP_SELECT_EXT') }}</label>
+				<label for="ext_name">{{ lang('PERMMATRIX_BACKUP_SELECT_EXT') ~ lang('COLON') }}</label><br>
 				<span>{{ lang('PERMMATRIX_BACKUP_SELECT_EXT_EXPLAIN') }}</span>
 			</dt>
 			<dd>
-				<select id="ext_name" name="ext_name" onchange="permmatrixShowPerms(this);">
+				<select id="ext_name" name="ext_name" data-pm-preview="permmatrix_perms_preview">
 					<option value="">— {{ lang('SELECT_OPTION') }} —</option>
-					<!-- BEGIN extensions -->
-					<option value="{{ extensions.NAME }}" data-perms="{{ extensions.PERMS_LIST }}">{{ extensions.NAME }} ({{ extensions.PERM_COUNT }} {{ lang('PERMMATRIX_BACKUP_PERMS') }})</option>
-					<!-- END extensions -->
+					{% for ext in loops.extensions %}
+						<option value="{{ ext.NAME }}" data-perms="{{ ext.PERMS_LIST }}">{{ ext.TITLE }} — {{ ext.NAME }} ({{ ext.PERM_COUNT }} {{ lang('PERMMATRIX_BACKUP_PERMS') }})</option>
+					{% endfor %}
 				</select>
 			</dd>
 		</dl>
-
 		<dl>
 			<dt>
-				<label>{{ lang('PERMMATRIX_BACKUP_PERMS_PREVIEW') }}</label>
+				<label>{{ lang('PERMMATRIX_BACKUP_PERMS_PREVIEW') ~ lang('COLON') }}</label><br>
 				<span>{{ lang('PERMMATRIX_BACKUP_PERMS_PREVIEW_EXPLAIN') }}</span>
 			</dt>
 			<dd>
-				<div id="permmatrix_perms_preview" style="padding:8px; background:#f5f5f5; border:1px solid #ccc; border-radius:3px; font-family:monospace; font-size:0.9em; min-height:1.4em; color:#666;">
-					—
-				</div>
+				<div id="permmatrix_perms_preview" class="permmatrix-preview">—</div>
 			</dd>
 		</dl>
-
 		<p class="submit-buttons">
 			<input class="button1" type="submit" name="export" value="{{ lang('PERMMATRIX_BACKUP_EXPORT_BTN') }}">
 		</p>
 	</fieldset>
-
 	{{ S_FORM_TOKEN }}
 </form>
 
 <form id="permmatrix_import" method="post" action="{{ U_ACTION }}" enctype="multipart/form-data">
-
 	<fieldset>
 		<legend>{{ lang('PERMMATRIX_BACKUP_IMPORT_TITLE') }}</legend>
-
 		<p>{{ lang('PERMMATRIX_BACKUP_IMPORT_EXPLAIN') }}</p>
-
 		<div class="errorbox">
 			<p>{{ lang('PERMMATRIX_BACKUP_IMPORT_WARNING') }}</p>
 		</div>
-
 		<dl>
 			<dt>
-				<label for="import_file">{{ lang('PERMMATRIX_BACKUP_FILE') }}</label>
+				<label for="import_file">{{ lang('PERMMATRIX_BACKUP_FILE') ~ lang('COLON') }}</label><br>
 				<span>{{ lang('PERMMATRIX_BACKUP_FILE_EXPLAIN') }}</span>
 			</dt>
 			<dd>
 				<input type="file" id="import_file" name="import_file" accept=".json">
 			</dd>
 		</dl>
-
 		<p class="submit-buttons">
 			<input class="button2" type="submit" name="import" value="{{ lang('PERMMATRIX_BACKUP_IMPORT_BTN') }}">
 		</p>
 	</fieldset>
-
 	{{ S_FORM_TOKEN }}
 </form>
 
-<script>
-function permmatrixShowPerms(select) {
-	var opt = select.options[select.selectedIndex];
-	var preview = document.getElementById('permmatrix_perms_preview');
-	var perms = opt.getAttribute('data-perms');
-	if (perms && perms.length > 0) {
-		preview.style.color = '#222';
-		preview.textContent = perms;
-	} else {
-		preview.style.color = '#666';
-		preview.textContent = '—';
-	}
-}
-</script>
+</div>
 
-<!-- INCLUDE overall_footer.html -->
+{% INCLUDEJS '@verturin_permmatrix/permmatrix_acp.js' %}
+
+{% include 'overall_footer.html' %}

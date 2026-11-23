@@ -13,11 +13,6 @@
 
 namespace verturin\permmatrix\migrations;
 
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 class add_edit_mode extends \phpbb\db\migration\migration
 {
 	/**

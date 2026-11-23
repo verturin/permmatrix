@@ -1,4 +1,77 @@
 # Changelog
+## [2.0.2] - 2026-11-21
+
+Ready for the phpBB.com Customisation Database. No functional change, no migration.
+
+### Changed
+- Passes phpBB's coding standard (CodeSniffer, `ruleset-php-extensions.xml`) with no error and no warning, as run by the official GitHub workflow [phpbb-extensions/test-framework](https://github.com/phpbb-extensions/test-framework):
+  - the `IN_PHPBB` guard is removed from class files (ACP modules, migrations, `core/`, `ext.php`), as in phpBB's Skeleton Extension; language files keep it;
+  - two closures in `acp/backup_module.php` written on several lines.
+- `composer.json`: `phpbb/phpbb` is no longer under `require` (it stays in `extra.soft-require`, enforced by `ext.php`); `composer/installers` added, as in the extensions published on phpBB.com.
+- English wording: role messages no longer say "assigned 1 times"; the save report uses phpBB's plural forms ("1 change applied" / "3 changes applied", same in French) and the `COLON` language key instead of a hardcoded " : ".
+
+### Verified
+EPV **PASSED** (0 fatal, 0 error, 0 warning, 0 notice) on the packaged zip; CodeSniffer 0 error, 0 warning; no executable file; on the test board: matrix, save with recap, orphan permissions, JSON export, no PHP error.
+
+---
+
+## [2.0.1] - 2026-11-07
+
+Compliance with the phpBB.com Extension Pre-Validator (EPV): **PASSED, 0 error, 0 warning**.
+
+### Changed
+- Backup export sent through a Symfony `Response` followed by `garbage_collection()` and `exit_handler()`, instead of `header()`, `echo` and `exit`.
+- `utf8_htmlspecialchars()` (phpBB) instead of `htmlspecialchars()`.
+- SQL queries written so every value is either cast to `int` or built with `sql_in_set()` inline.
+- The zip now follows the phpBB.com packaging rule: `verturin/permmatrix/…`.
+
+### Added
+- `license.txt` (GPL-2.0 text), required by phpBB.com.
+- **Orphan permissions** grouped at the end of the phpBB tabs under "Orphan permissions (removed extension)", with an explanation. These are permissions left in the database by an extension removed without "Delete data" (for example `u_mchat_*` from mChat): no active extension declares them and they have no translation.
+
+### Verified
+EPV run on the packaged zip; on the test board: JSON export downloaded and complete, save from the matrix with recap, French interface.
+
+---
+
+## [2.0.0] - 2026-11-07
+
+Major version: the matrix moves into the ACP, with one tab per extension. The public pages are removed.
+
+### Added
+- **ACP module "Permission matrix"** (`ACP` → `Extensions`), placed first in the extension's menu. Requires `a_authgroups`.
+- **One tab per extension** that declares permissions, with its display name and version. Permissions are detected from the extension's `migrations/` files; labels and categories come from the extension's own language files.
+- **phpBB tabs**: Forums (`f_` or local `m_` per forum, for one group), Users (`u_`), Global moderators (`m_`), Administrators (`a_`). They replace `/permmatrix` and `/permmatrix-user`. phpBB tabs show phpBB's own permissions only.
+- Presentation taken from SimpleChat: tab bars, vertical group names, coloured Yes / No / Never list in every cell.
+- **Batch editing with mandatory recap**: change several cells, then *Review and apply* shows group, forum, permission, before → after. Nothing is written before confirmation.
+- Role choice per group inside the recap: convert into individual permissions (default) or update the role, with its number of assignments.
+- Per-forum permissions of an extension listed in its tab, with a link to the Forums tab.
+- Read-only list of users with individual permissions on an extension (50 at most).
+- Row filter, pending-change counter, *Undo all*, warning when leaving with unsaved changes.
+- Admin log entry `LOG_PERMMATRIX_CHANGED` for every save.
+- Shared class `core/ext_permissions.php` (permission detection, metadata, permission languages), used by the matrix and the backup.
+
+### Changed
+- Writing goes through phpBB's permission API (`auth_admin::get_mask()` / `acl_set()`), like `ACP` → `Permissions`. Role conversion keeps every right of the role (checked: 31 of 31).
+- Only changed cells are submitted, so large matrices never reach PHP's `max_input_vars`.
+- ACP templates (matrix, settings, backup) written in **Twig**, with one stylesheet `permmatrix_acp.css` and one script `permmatrix_acp.js`; no inline style or script left.
+- Settings reduced to the hidden groups, which now apply to every tab.
+- Backup page: extensions listed with their display name; the detection also recognises `array('permission.add', array(…))`.
+- The backup export stops with an error message if JSON encoding fails, instead of downloading an empty file.
+
+### Removed
+- Public pages `/permmatrix` and `/permmatrix-user`, their AJAX endpoint `/permmatrix/edit`, the navbar links.
+- `controller/`, `event/`, `config/` (routing and services), `styles/`, front-end language files.
+- Permission `u_permmatrix_view` and the settings `verturin_permmatrix_enabled`, `verturin_permmatrix_admin_only`, `verturin_permmatrix_excluded_groups_user`.
+
+### Upgrade
+Disable, **delete the folder**, upload, **purge the cache**, enable. See INSTALL.md.
+
+### Verified
+On a real phpBB 3.3.15 board (PHP 8.3, SQLite) with SimpleChat installed: upgrade 1.3.9 → 2.0.0, rendering of the five tabs and the two other pages without PHP or JavaScript error, direct change, role update, lossless role conversion, `f_` and `m_` per forum, admin log, JSON export, full uninstall then reinstall leaving no trace. Static checks: PHP syntax of every file, JavaScript syntax, FR/EN parity (87 keys each, none unused), no function newer than PHP 7.2.
+
+---
+
 ## [1.3.9] - 2026-08-17
 
 ### Added

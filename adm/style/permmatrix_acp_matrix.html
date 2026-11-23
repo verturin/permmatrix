@@ -1,0 +1,253 @@
+{% include 'overall_header.html' %}
+
+{% INCLUDECSS '@verturin_permmatrix/permmatrix_acp.css' %}
+{% INCLUDEJS '@verturin_permmatrix/permmatrix_acp.js' %}
+
+<a id="maincontent"></a>
+
+<div class="permmatrix-acp">
+
+<h1>{{ lang('PERMMATRIX_MATRIX') }}</h1>
+<p>{{ lang('PERMMATRIX_MATRIX_EXPLAIN') }}</p>
+
+{# ── Onglets ─────────────────────────────────────────────────────────── #}
+<nav class="permmatrix-tabbar" aria-label="{{ lang('PERMMATRIX_MATRIX')|e('html_attr') }}">
+	{% if loops.ext_tabs|length %}
+	<div class="permmatrix-tabrow">
+		<span class="permmatrix-tabrow-label">{{ lang('PERMMATRIX_TABS_EXTENSIONS') }}</span>
+		<div class="permmatrix-tabs" role="tablist">
+			{% for tab in loops.ext_tabs %}
+				<a href="{{ tab.U_TAB }}" class="permmatrix-tab{% if tab.S_SELECTED %} active{% endif %}" role="tab" aria-selected="{% if tab.S_SELECTED %}true{% else %}false{% endif %}" title="{{ tab.TECH_NAME }}">{{ tab.TITLE }} <span class="permmatrix-tab-count">{{ tab.COUNT }}</span></a>
+			{% endfor %}
+		</div>
+	</div>
+	{% endif %}
+	<div class="permmatrix-tabrow">
+		<span class="permmatrix-tabrow-label">{{ lang('PERMMATRIX_TABS_PHPBB') }}</span>
+		<div class="permmatrix-tabs permmatrix-tabs-native" role="tablist">
+			{% for tab in loops.native_tabs %}
+				<a href="{{ tab.U_TAB }}" class="permmatrix-tab{% if tab.S_SELECTED %} active{% endif %}" role="tab" aria-selected="{% if tab.S_SELECTED %}true{% else %}false{% endif %}">{{ tab.TITLE }}</a>
+			{% endfor %}
+		</div>
+	</div>
+</nav>
+
+{# ── En-tête de l'onglet ─────────────────────────────────────────────── #}
+<div class="permmatrix-head">
+	<h2>{{ PERMMATRIX_TAB_LABEL }}
+		{% if PERMMATRIX_EXT_VERSION %}<span class="permmatrix-badge"><span class="permmatrix-badge-label">v</span><span class="permmatrix-badge-value">{{ PERMMATRIX_EXT_VERSION }}</span></span>{% endif %}
+	</h2>
+	{% if PERMMATRIX_EXT_NAME %}<code class="permmatrix-techname">{{ PERMMATRIX_EXT_NAME }}</code>{% endif %}
+	{% if S_PERMMATRIX_TAB == 'forums' %}
+		<p>{{ lang('PERMMATRIX_FORUMS_EXPLAIN') }}</p>
+	{% elseif S_PERMMATRIX_TAB == 'ext' %}
+		<p>{{ lang('PERMMATRIX_EXT_EXPLAIN') }}</p>
+	{% else %}
+		<p>{{ lang('PERMMATRIX_NATIVE_EXPLAIN') }}</p>
+	{% endif %}
+</div>
+
+<p class="permmatrix-notice">{{ lang('PERMMATRIX_ROLES_NOTICE') }}</p>
+
+{# ── Sélecteurs de l'onglet Forums (formulaire GET distinct) ─────────── #}
+{% if S_PERMMATRIX_TAB == 'forums' %}
+<form class="permmatrix-filters" method="get" action="{{ PERMMATRIX_FORM_PATH }}">
+	{% for param in loops.base_params %}<input type="hidden" name="{{ param.NAME }}" value="{{ param.VALUE }}">{% endfor %}
+	<input type="hidden" name="tab" value="forums">
+	<label for="permmatrix-g">{{ lang('PERMMATRIX_GROUP') ~ lang('COLON') }}</label>
+	<select id="permmatrix-g" name="g" data-pm-autosubmit>
+		{% for group in loops.group_select %}
+			<option value="{{ group.ID }}"{% if group.S_SELECTED %} selected="selected"{% endif %}>{{ group.NAME }}</option>
+		{% endfor %}
+	</select>
+	<label for="permmatrix-ftype">{{ lang('PERMMATRIX_FTYPE') ~ lang('COLON') }}</label>
+	<select id="permmatrix-ftype" name="ftype" data-pm-autosubmit>
+		<option value="f_"{% if PERMMATRIX_FTYPE == 'f_' %} selected="selected"{% endif %}>{{ lang('PERMMATRIX_FTYPE_F') }}</option>
+		<option value="m_"{% if PERMMATRIX_FTYPE == 'm_' %} selected="selected"{% endif %}>{{ lang('PERMMATRIX_FTYPE_M') }}</option>
+	</select>
+	<noscript><input class="button2" type="submit" value="{{ lang('GO') }}"></noscript>
+	<a class="permmatrix-native-link" href="{{ U_PERMMATRIX_NATIVE }}">{{ lang('PERMMATRIX_OPEN_NATIVE') }}</a>
+</form>
+{% endif %}
+
+{# ── Formulaire de modification ──────────────────────────────────────── #}
+<form id="permmatrix-form" method="post" action="{{ U_ACTION }}"
+	data-lbl-yes="{{ lang('ACL_YES')|e('html_attr') }}"
+	data-lbl-no="{{ lang('ACL_NO')|e('html_attr') }}"
+	data-lbl-never="{{ lang('ACL_NEVER')|e('html_attr') }}"
+	data-msg-leave="{{ lang('PERMMATRIX_JS_LEAVE')|e('html_attr') }}"
+	data-msg-role="{{ lang('PERMMATRIX_JS_ROLE')|e('html_attr') }}"
+	data-msg-role-update="{{ lang('PERMMATRIX_JS_ROLE_UPDATE')|e('html_attr') }}"
+	data-msg-role-convert="{{ lang('PERMMATRIX_JS_ROLE_CONVERT')|e('html_attr') }}">
+
+	<input type="hidden" name="apply" value="1">
+
+	{% if S_PERMMATRIX_TAB == 'forums' %}
+		{# ── Matrice forums × permissions ── #}
+		{% if loops.fcols|length and loops.frows|length %}
+		<div class="permmatrix-scroll">
+		<table class="table1 permmatrix-table permmatrix-table-forums">
+			<thead>
+				<tr>
+					<th class="permmatrix-col-label">{{ lang('PERMMATRIX_FORUM') }} <span class="permmatrix-sub">— {{ PERMMATRIX_GROUP_NAME }}</span></th>
+					{% for col in loops.fcols %}
+						<th class="permmatrix-vertical" title="{{ col.LABEL_ATTR }}{% if col.OWNER %} ({{ col.OWNER }}){% endif %}"><span>{{ col.LABEL }}</span>{% if col.OWNER %}<i class="permmatrix-ext-dot" aria-hidden="true"></i>{% endif %}</th>
+					{% endfor %}
+				</tr>
+			</thead>
+			<tbody>
+			{% for row in loops.frows %}
+				<tr class="permmatrix-forum-{{ row.TYPE }} permmatrix-depth-{{ row.DEPTH }}">
+					<th scope="row" class="permmatrix-col-label">
+						<span class="permmatrix-forum-name">{{ row.NAME }}</span>
+						{% if row.ROLE %}<span class="permmatrix-role" title="{{ lang('PERMMATRIX_ROLE')|e('html_attr') }}">★ {{ row.ROLE }}</span>{% endif %}
+					</th>
+					{% for cell in row.cells %}
+						{% include 'permmatrix_acp_cell.html' %}
+					{% endfor %}
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+		</div>
+		<p class="permmatrix-legend">{{ lang('PERMMATRIX_LEGEND') }} <span class="permmatrix-ext-dot-inline"></span> {{ lang('PERMMATRIX_LEGEND_EXT') }}</p>
+		{% else %}
+			<p class="permmatrix-empty">{{ lang('PERMMATRIX_NO_OPTIONS') }}</p>
+		{% endif %}
+
+	{% else %}
+		{# ── Matrice permissions × groupes ── #}
+		{% if loops.sections|length %}
+		<div class="permmatrix-search">
+			<label for="permmatrix-filter">{{ lang('PERMMATRIX_FILTER') ~ lang('COLON') }}</label>
+			<input type="search" id="permmatrix-filter" placeholder="{{ lang('PERMMATRIX_FILTER_PLACEHOLDER')|e('html_attr') }}">
+		</div>
+		<div class="permmatrix-scroll">
+		<table class="table1 permmatrix-table">
+			<thead>
+				<tr>
+					<th class="permmatrix-col-label">{{ lang('PERMMATRIX_PERMISSION') }}</th>
+					{% for col in loops.columns %}
+						<th class="permmatrix-vertical">
+							<a href="{{ col.U_PERMS }}" title="{{ lang('PERMMATRIX_OPEN_GROUP')|e('html_attr') }}{% if col.ROLES %} — {{ lang('PERMMATRIX_ROLE') }} : {{ col.ROLES }}{% endif %}"><span{% if col.COLOUR %} style="color: #{{ col.COLOUR }};"{% endif %}>{{ col.NAME }}{% if col.ROLES %} ★{% endif %}</span></a>
+						</th>
+					{% endfor %}
+				</tr>
+			</thead>
+			{% for section in loops.sections %}
+			<tbody class="permmatrix-section">
+				<tr class="permmatrix-section-head">
+					<th colspan="{{ PERMMATRIX_COLSPAN }}">{{ section.TITLE }} <span class="permmatrix-sub">({{ section.COUNT }})</span></th>
+				</tr>
+				{% for row in section.rows %}
+					{% if row.S_CATEGORY %}
+					<tr class="permmatrix-cat{% if row.S_ORPHAN %} permmatrix-cat-orphan{% endif %}">
+						<td colspan="{{ PERMMATRIX_COLSPAN }}">{{ row.LABEL }}{% if row.EXPLAIN %}<span class="permmatrix-explain">{{ row.EXPLAIN }}</span>{% endif %}</td>
+					</tr>
+					{% else %}
+					<tr class="permmatrix-row{% if row.S_ORPHAN %} permmatrix-row-orphan{% endif %}" data-pm-search="{{ row.SEARCH }}">
+						<th scope="row" class="permmatrix-col-label">
+							<strong>{{ row.LABEL }}</strong>{% if row.S_FOUNDER %} <span class="permmatrix-founder" title="{{ lang('PERMMATRIX_FOUNDER_ONLY')|e('html_attr') }}">🔒</span>{% endif %}
+							<code class="permmatrix-optname">{{ row.OPTION }}</code>
+							{% if row.EXPLAIN %}<span class="permmatrix-explain">{{ row.EXPLAIN }}</span>{% endif %}
+						</th>
+						{% for cell in row.cells %}
+							{% include 'permmatrix_acp_cell.html' %}
+						{% endfor %}
+					</tr>
+					{% endif %}
+				{% endfor %}
+			</tbody>
+			{% endfor %}
+		</table>
+		</div>
+		<p class="permmatrix-legend">{{ lang('PERMMATRIX_LEGEND') }}</p>
+		{% elseif not loops.local_options|length %}
+			<p class="permmatrix-empty">{{ lang('PERMMATRIX_NO_OPTIONS') }}</p>
+		{% endif %}
+	{% endif %}
+
+	{# ── Barre d'enregistrement ── #}
+	<div id="permmatrix-bar" class="permmatrix-bar">
+		<span class="permmatrix-bar-text">{{ lang('PERMMATRIX_PENDING') ~ lang('COLON') }} <strong id="permmatrix-count">0</strong></span>
+		<input type="button" class="button2" id="permmatrix-undo" value="{{ lang('PERMMATRIX_UNDO')|e('html_attr') }}">
+		<input type="submit" class="button1" id="permmatrix-submit" value="{{ lang('PERMMATRIX_REVIEW')|e('html_attr') }}">
+	</div>
+
+	{# ── Fenêtre de confirmation (remplie par JavaScript) ── #}
+	<div id="permmatrix-dialog" class="permmatrix-overlay" hidden>
+		<div class="permmatrix-dialog" role="dialog" aria-modal="true" aria-labelledby="permmatrix-dialog-title">
+			<h3 id="permmatrix-dialog-title">{{ lang('PERMMATRIX_CONFIRM_TITLE') }}</h3>
+			<p class="permmatrix-dialog-context"><strong>{{ PERMMATRIX_TAB_LABEL }}</strong>{% if S_PERMMATRIX_TAB == 'forums' %} — {{ lang('PERMMATRIX_GROUP') }} : <strong>{{ PERMMATRIX_GROUP_NAME }}</strong>{% endif %}</p>
+			<div class="permmatrix-dialog-body">
+				<table class="table1 permmatrix-recap">
+					<thead>
+						<tr>
+							<th>{{ lang('PERMMATRIX_GROUP') }}</th>
+							{% if S_PERMMATRIX_TAB == 'forums' %}<th>{{ lang('PERMMATRIX_FORUM') }}</th>{% endif %}
+							<th>{{ lang('PERMMATRIX_PERMISSION') }}</th>
+							<th>{{ lang('PERMMATRIX_BEFORE') }}</th>
+							<th>{{ lang('PERMMATRIX_AFTER') }}</th>
+						</tr>
+					</thead>
+					<tbody id="permmatrix-recap-rows"></tbody>
+				</table>
+				<div id="permmatrix-roles"></div>
+			</div>
+			<p class="permmatrix-dialog-warning">{{ lang('PERMMATRIX_CONFIRM_WARNING') }}</p>
+			<div class="permmatrix-dialog-buttons">
+				<input type="button" class="button2" id="permmatrix-cancel" value="{{ lang('CANCEL')|e('html_attr') }}">
+				<input type="button" class="button1" id="permmatrix-confirm" value="{{ lang('PERMMATRIX_APPLY')|e('html_attr') }}">
+			</div>
+		</div>
+	</div>
+
+	{{ S_FORM_TOKEN }}
+</form>
+
+{# ── Permissions locales de l'extension ──────────────────────────────── #}
+{% if loops.local_options|length %}
+<fieldset class="permmatrix-box">
+	<legend>{{ lang('PERMMATRIX_LOCAL_TITLE') }}</legend>
+	<p>{{ lang('PERMMATRIX_LOCAL_EXPLAIN') }}</p>
+	<ul class="permmatrix-local">
+		{% for opt in loops.local_options %}
+			<li><strong>{{ opt.LABEL }}</strong> <code class="permmatrix-optname">{{ opt.OPTION }}</code> — {{ opt.TYPE }} · <a href="{{ opt.U_FORUMS }}">{{ lang('PERMMATRIX_LOCAL_OPEN') }}</a></li>
+		{% endfor %}
+	</ul>
+</fieldset>
+{% endif %}
+
+{# ── Utilisateurs avec permissions individuelles (lecture seule) ─────── #}
+{% if loops.urows|length %}
+<fieldset class="permmatrix-box">
+	<legend>{{ lang('PERMMATRIX_USERS_TITLE') }}</legend>
+	<p>{{ lang('PERMMATRIX_USERS_EXPLAIN') }}</p>
+	<div class="permmatrix-scroll">
+	<table class="table1 permmatrix-table permmatrix-table-users">
+		<thead>
+			<tr>
+				<th class="permmatrix-col-label">{{ lang('USERNAME') }}</th>
+				{% for col in loops.ucols %}
+					<th class="permmatrix-vertical" title="{{ col.LABEL_ATTR }}"><span>{{ col.LABEL }}</span></th>
+				{% endfor %}
+			</tr>
+		</thead>
+		<tbody>
+		{% for row in loops.urows %}
+			<tr>
+				<th scope="row" class="permmatrix-col-label">{{ row.NAME }} · <a href="{{ row.U_PERMS }}">{{ lang('PERMMATRIX_OPEN_USER') }}</a></th>
+				{% for cell in row.cells %}
+					<td class="permmatrix-cell permmatrix-ro permmatrix-v{{ cell.VALUE }}">{% if cell.VALUE == S_PERM_YES %}✔{% elseif cell.VALUE == S_PERM_NEVER %}✖{% else %}–{% endif %}</td>
+				{% endfor %}
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+	</div>
+</fieldset>
+{% endif %}
+
+</div>
+
+{% include 'overall_footer.html' %}

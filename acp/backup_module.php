@@ -15,11 +15,6 @@
 
 namespace verturin\permmatrix\acp;
 
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 class backup_module
 {
 	/** @var string */
@@ -49,6 +44,8 @@ class backup_module
 		$form_key = 'verturin_permmatrix_backup';
 		add_form_key($form_key);
 
+		$source = new \verturin\permmatrix\core\ext_permissions($db, $phpbb_extension_manager, $phpbb_root_path);
+
 		// ───────────────────────────────────────────────
 		// EXPORT
 		// ───────────────────────────────────────────────
@@ -67,7 +64,7 @@ class backup_module
 			}
 
 			// Liste des permissions appartenant à cette extension
-			$ext_perms = $this->get_ext_permissions_from_migrations($phpbb_extension_manager, $phpbb_root_path, $ext_name);
+			$ext_perms = $source->get_declared($ext_name);
 
 			if (empty($ext_perms))
 			{
@@ -84,18 +81,25 @@ class backup_module
 			$filename = 'permmatrix_backup_' . str_replace(['/', '\\'], '_', $ext_name) . '_' . date('Ymd_His') . '.json';
 			$json     = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
+			if ($json === false || $json === '')
+			{
+				trigger_error($user->lang('PERMMATRIX_BACKUP_JSON_ERROR') . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+
 			while (ob_get_level())
 			{
 				ob_end_clean();
 			}
 
-			header('Content-Type: application/json; charset=UTF-8');
-			header('Content-Disposition: attachment; filename="' . $filename . '"');
-			header('Content-Length: ' . strlen($json));
-			header('Cache-Control: no-store, no-cache, must-revalidate');
-			echo $json;
-			flush();
-			exit;
+			$response = new \Symfony\Component\HttpFoundation\Response($json, 200, [
+				'Content-Type'        => 'application/json; charset=UTF-8',
+				'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+				'Cache-Control'       => 'no-store, no-cache, must-revalidate',
+			]);
+			$response->send();
+
+			garbage_collection();
+			exit_handler();
 		}
 
 		// ───────────────────────────────────────────────
@@ -153,15 +157,17 @@ class backup_module
 
 		foreach ($installed as $ext_name => $ext_path)
 		{
-			$ext_perms = $this->get_ext_permissions_from_migrations($phpbb_extension_manager, $phpbb_root_path, $ext_name);
+			$ext_perms = $source->get_declared($ext_name);
 
 			if (empty($ext_perms))
 			{
 				continue; // N'affiche que les extensions ayant des permissions
 			}
 
+			$meta = $source->get_metadata($ext_name);
 			$template->assign_block_vars('extensions', [
 				'NAME'        => $ext_name,
+				'TITLE'       => $meta['name'],
 				'PERM_COUNT'  => count($ext_perms),
 				'PERMS_LIST'  => implode(', ', $ext_perms),
 			]);
@@ -170,97 +176,6 @@ class backup_module
 		$template->assign_vars([
 			'U_ACTION' => $this->u_action,
 		]);
-	}
-
-	/**
-	 * Extrait la liste des permissions déclarées par une extension en lisant
-	 * statiquement ses fichiers migrations/*.php et en cherchant les appels
-	 * permission.add.
-	 *
-	 * @param \phpbb\extension\manager $ext_manager
-	 * @param string $phpbb_root_path
-	 * @param string $ext_name (ex: "verturin/chastitytracker")
-	 * @return array Liste des noms de permissions (auth_option)
-	 */
-	private function get_ext_permissions_from_migrations($ext_manager, $phpbb_root_path, $ext_name)
-	{
-		$ext_path = $phpbb_root_path . 'ext/' . $ext_name . '/migrations/';
-
-		if (!is_dir($ext_path))
-		{
-			return [];
-		}
-
-		$perms = [];
-		$files = $this->scan_php_files($ext_path);
-
-		foreach ($files as $file)
-		{
-			$content = @file_get_contents($file);
-			if ($content === false)
-			{
-				continue;
-			}
-
-			// Cherche tous les appels permission.add
-			// Patterns acceptés :
-			//   ['permission.add', ['nom_permission', true]]
-			//   ['permission.add', ['nom_permission', false]]
-			//   ['permission.add', ['nom_permission']]
-			//   ['permission.add', ['nom_permission', true, 'role']]
-			// Le nom peut être entre quotes simples ou doubles.
-			if (preg_match_all('/[\'"]permission\.add[\'"]\s*,\s*\[\s*[\'"]([a-zA-Z0-9_]+)[\'"]/', $content, $matches))
-			{
-				foreach ($matches[1] as $perm_name)
-				{
-					$perms[$perm_name] = true;
-				}
-			}
-		}
-
-		return array_keys($perms);
-	}
-
-	/**
-	 * Scanne récursivement un répertoire pour trouver tous les fichiers .php.
-	 *
-	 * @param string $dir
-	 * @return array
-	 */
-	private function scan_php_files($dir)
-	{
-		$result = [];
-		$dir = rtrim($dir, '/\\') . '/';
-
-		if (!is_dir($dir))
-		{
-			return $result;
-		}
-
-		$items = @scandir($dir);
-		if ($items === false)
-		{
-			return $result;
-		}
-
-		foreach ($items as $item)
-		{
-			if ($item === '.' || $item === '..')
-			{
-				continue;
-			}
-			$path = $dir . $item;
-			if (is_dir($path))
-			{
-				$result = array_merge($result, $this->scan_php_files($path));
-			}
-			elseif (substr($item, -4) === '.php')
-			{
-				$result[] = $path;
-			}
-		}
-
-		return $result;
 	}
 
 	/**
@@ -563,7 +478,9 @@ class backup_module
 		// ─── Restaure les permissions d'utilisateurs ───
 		if (!empty($data['users']))
 		{
-			$usernames = array_map(function($u) { return $u['username']; }, $data['users']);
+			$usernames = array_map(function ($u) {
+				return $u['username'];
+			}, $data['users']);
 			$username_to_id = [];
 			$sql = 'SELECT user_id, username FROM ' . USERS_TABLE . '
 					WHERE ' . $db->sql_in_set('username', $usernames);
@@ -640,7 +557,9 @@ class backup_module
 		// ─── Restaure les assignations rôle → utilisateur ───
 		if (!empty($data['user_roles']))
 		{
-			$usernames = array_map(function($ur) { return $ur['username']; }, $data['user_roles']);
+			$usernames = array_map(function ($ur) {
+				return $ur['username'];
+			}, $data['user_roles']);
 			$ur_username_to_id = [];
 			$sql = 'SELECT user_id, username FROM ' . USERS_TABLE . '
 					WHERE ' . $db->sql_in_set('username', $usernames);
